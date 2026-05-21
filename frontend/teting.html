@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facebook Post Grid</title>
+    <style>
+        .facebook-post {
+          max-width: 350px;
+          max-height: 350px;
+          margin: 0 auto;
+          background: #fff;
+          border-radius: 8px;
+          overflow: hidden;
+          box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .image-grid {
+          display: grid;
+          gap: 2px;
+        }
+
+        .image-grid img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+          border: 1px solid #000;
+        }
+
+        /* Single image */
+        .single-image {
+          grid-template-columns: 1fr;
+          aspect-ratio: auto;
+        }
+
+        /* Two images */
+        .two-images {
+          grid-template-columns: 1fr 1fr;
+          aspect-ratio: 1 / 1;
+        }
+
+        /* Three images */
+        .three-images {
+          grid-template-columns: 1fr 1fr;
+          grid-template-rows: 1fr 1fr;
+          aspect-ratio: 1 / 1;
+        }
+        .three-images img:first-child {
+          grid-column: 1 / -1;
+          grid-row: 1 / -1;
+        }
+
+        /* Four images */
+        .four-images {
+          grid-template-columns: 1fr 1fr;
+          aspect-ratio: 1 / 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="facebook-post">
+        <div class="image-grid" id="imageGrid">
+            <!-- Test with different numbers of images -->
+            <img src="./assets/testImages/1735362964968-removebg-preview.png">
+            <img src="./assets/testImages/IMG_20240515_004422.jpg">
+            <img src="./assets/testImages/2785e4160c717d329d7770799f68ff3a.jpg">
+            <img src="./assets/images/logo/undraw_new-year-2025_1tmm.svg">
+        </div>
+    </div>
+
+    <script>
+        // Detect number of images and apply appropriate class
+        const imageGrid = document.getElementById('imageGrid');
+        const numImages = imageGrid.children.length;
+
+        // Remove existing layout classes
+        const layoutClasses = ['single-image', 'two-images', 'three-images', 'four-images'];
+        imageGrid.classList.remove(...layoutClasses);
+
+        // Add appropriate class based on number of images
+        if(numImages === 1) {
+            imageGrid.classList.add('single-image');
+        } else if(numImages === 2) {
+            imageGrid.classList.add('two-images');
+        } else if(numImages === 3) {
+            imageGrid.classList.add('three-images');
+        } else if(numImages >= 4) {
+            imageGrid.classList.add('four-images');
+        }
+    </script>
+</body>
+</html>
+<style>
+  
+  </style>
+  
+  <div class="facebook-post">
+    <div class="image-grid" id="imageGrid">
+      <!-- Dynamic images will be inserted here -->
+      <img class="photo-post" src="image1.jpg" loading="lazy" alt="">
+      <img class="photo-post" src="image2.jpg" loading="lazy" alt="">
+      <img class="photo-post" src="image3.jpg" loading="lazy" alt="">
+    </div>
+  </div>
+  
+  <script>
+  // Dynamic layout handling
+  function updateImageGrid() {
+    const grid = document.getElementById('imageGrid');
+    const images = grid.getElementsByTagName('img');
+    const count = images.length;
+  
+    // Remove existing layout classes
+    grid.className = 'image-grid';
+    
+    // Apply appropriate layout class
+    if(count === 1) {
+      grid.classList.add('single-image');
+    } else if(count === 2) {
+      grid.classList.add('two-images');
+    } else if(count === 3) {
+      grid.classList.add('three-images');
+    } else if(count >= 4) {
+      grid.classList.add('four-images');
+      // For more than 4 images, show first 4
+      if(count > 4) {
+        for(let i = 4; i < count; i++) {
+          images[i].style.display = 'none';
+        }
+      }
+    }
+  }
+  
+  // Initial setup
+  updateImageGrid();
+  
+  // Optional: Add resize observer if needed
+  new ResizeObserver(updateImageGrid).observe(document.body);
+  </script>

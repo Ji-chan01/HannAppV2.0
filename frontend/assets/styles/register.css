@@ -1,0 +1,477 @@
+@import url('./variables.css');
+
+body {
+    background: var(--smoky-black);
+    overflow: hidden;
+}
+
+/* LEFT SECTION */
+.left-section {
+    position: absolute;
+    display: flex;
+    /* justify-content: space-between; */
+    left: 3%;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 70%;
+    width: 55%;
+}
+
+.left-section .main {
+    height: 80%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 100%;
+    padding-left: 3rem;
+}
+
+.left-section img {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    z-index: 0;
+    width: 300px;
+}
+
+.left-section .main {
+    position: relative;
+    z-index: 1;
+}
+
+.left-section .main .headers .down {
+    color: var(--light-gray);
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.left-section .main .headers .up {
+    color: var(--light-gray);
+    font-size: 1.5rem;
+    width: 90%;
+    font-weight: 600;
+}
+
+.left-section .main .headers .h1 {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    background: #ff8177;
+    background-image: linear-gradient(
+        to right,
+        #ff0844 0%,
+        #ffb199 100%);
+    background-size: 100%;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.left-section .main .kaemehan {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #fff;
+    max-width: max-content;
+}
+
+.left-section .main .kaemehan h1 {
+    font-size: 2rem;
+}
+
+.kaemehan p {
+    font-weight: 700;
+    font-size: 3rem;
+    color: var(--gradient-yellow);
+}
+
+.kaemehan h5 {
+    font-size: 1.3rem;
+}
+
+/* FORM */
+#registrationForm {
+    position: absolute;
+    right: 10%;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    height: 75%;
+    font-family: Arial, sans-serif;
+    padding: 2rem;
+    width: 30%;
+    gap: 1rem;
+    justify-content: center;
+    box-shadow: 0 0 1rem var(--white-shadow);
+    border-radius: 10px;
+    border: 2px solid #fff;
+    backdrop-filter: blur(10px);
+}
+
+#registrationForm h5 {
+    color: #fff;
+}
+
+#registrationForm h1 {
+    color: #fff;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.modals {
+    display: none;
+}
+
+.modals.active {
+    display: flex;
+    flex-direction: column;
+}
+
+.inputs {
+    position: relative;
+    width: 100%;
+    margin: 0.5rem 0;
+}
+  
+.inputs input {
+    width: 100%;
+    padding: 15px 8px;
+    background-color: #F3F3F3;
+    border: none;
+    outline: none;
+    font-size: 13px;
+    border-radius: 3px;
+}
+
+.inputs label {
+    position: absolute;
+    left: 10px;
+    top: 13px;
+    pointer-events: none;
+    transition: 0.15s;
+    color: rgb(129, 129, 129);
+}
+
+.inputs input:focus + label,
+.inputs input:not(:placeholder-shown) + label {
+    left: 7px;
+    top: 3px;
+    font-size: 11px;
+}
+
+.next-btn {
+    display: flex;
+    justify-content: space-between;
+}
+
+.next-btn-name {
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.next-btn button {
+    border: 2px solid var(--gradient-yellow);
+    color: var(--gradient-yellow);
+    box-shadow: 0 0 0.2rem var(--gradient-yellow);
+    transition: all 150ms ease;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 600;
+    border-radius: 5px;
+    padding: 0.7rem 3.5rem;
+    background: transparent;
+    border-radius: 25px;
+    transition: all 150ms ease;
+}
+
+#nextBtnName {
+    display: flex;
+    justify-content: right;
+}
+
+.next-btn button:hover {
+    background: var(--gradient-yellow);
+    color: var(--smoky-black);
+    box-shadow: 0 0 0.2rem var(--eerie-black);
+}
+
+.separator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.separator .line {
+    width: 40%;
+    background: var(--jet);
+    border-radius: 50%;
+    height: 1px;
+}
+
+.separator p {
+    font-size: 0.8rem;
+    color: var(--white-shadow);
+}
+
+#registrationForm a {
+    color: var(--white-shadow);
+    font-size: 0.7rem;
+    transition: all 100ms ease;
+    max-width: max-content;
+}
+
+#registrationForm a:hover {
+    color: var(--light-gray);
+}
+
+.choice-cont {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.img-cont {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+}
+
+.img-cont p {
+    color: var(--white-shadow);
+}
+
+.male.active {
+    color:  #1D9BF0;
+    font-weight: 600;
+    border: 3px solid #1D9BF0;
+    background: #fff;
+}
+
+.female.active {
+    color: #ffb7ce;
+    font-weight: 600;
+    background: #fff;
+    border: 3px solid #ffb7ce;
+}
+
+.img-cont.active {
+    color: #fff;
+}
+
+.img-cont p{
+    border: none !important;
+    background: transparent !important;
+    transition: all 150ms ease;
+ }
+
+.img-cont img {
+    width: 70px;
+    border-radius: 50%;
+    border: 3px solid var(--white-shadow);
+    transition: all 150ms ease;
+}
+
+.img-cont:hover img.male {
+    background: #fff;
+    border: 3px solid #1D9BF0;
+}
+
+.img-cont:hover img.female {
+    background: #fff;
+    border: 3px solid #ffb7ce;
+}
+
+.img-cont:hover .male {
+    color: #1D9BF0;
+    font-weight: 600;
+}
+
+.img-cont:hover .female {
+    color: #ffb7ce;
+    font-weight: 600;
+}
+
+.next-btn .backBtn {
+    background: var(--jet);
+    color: #fff;
+    border: none;
+    box-shadow: none;
+    
+    padding: 0.7rem 3.3rem;
+}
+
+.next-btn .backBtn:hover {
+    background: #fff;
+    color: var(--jet);
+}
+
+.gender .next-btn {
+    margin-top: 2rem;
+}
+
+#birthday {
+    background: #F3F3F3;
+    border: none;
+    /* color: #fff; */
+    padding: 5px;
+    font-size: 0.8rem;
+    border-radius: 5px;
+    width: 50%;
+}
+
+.private-info p {
+    color: #fff;
+    font-size: 0.7rem;
+}
+
+.private-info .inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.private-info .inputs input {
+    padding: 0.8rem;
+}
+
+.private-info .next-btn {
+    margin-top: 1rem;
+}
+
+.dp-cont {
+    gap: 1.5rem;
+}
+
+.dp-cont .dp-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+}
+
+.dp-cont .dp-container img {
+    border: 1px solid #fff;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    background: var(--jet);
+    width: 100px;
+}
+
+.dp-cont .dp-container input[type="file"] {
+    display: none;
+}
+
+.dp-cont .dp-container .label-change-dp {
+    cursor: pointer;
+    color: #fff;
+    font-size: 0.8rem;
+    position: absolute;
+    bottom: 0.5rem;
+    right: 6.8rem;
+    background: var(--jet);
+    border-radius: 50%;
+    padding: 1px 4.5px;
+    padding-top: 3px;
+    border: 2px solid #fff;
+}
+
+.dp-cont .dp-container .label-change-dp i {
+    font-size: 0.9rem;
+}
+
+.dp-cont span {
+    color: #fff;
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-align: center;
+    width: 19rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-wrap: nowrap;
+}
+
+.create-acc .back i {
+    background: transparent;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 1.9rem;
+    border: 2px solid #fff;
+    cursor: pointer;
+    transition: all 150ms ease;
+    margin-bottom: 0.5rem;
+}
+
+.create-acc .back i:hover {
+    color: var(--smoky-black);
+    background: #fff;
+}
+
+.create-acc .inputs input {
+    margin: 0.2rem 0;
+    padding: 0.75rem;
+    padding-left: 2rem;
+}
+
+.create-acc .inputs .input {
+    position: relative;
+}
+
+.create-acc .inputs .input i {
+    position: absolute;
+    left: 0.8rem;
+    top: 1.2rem;
+    color: var(--white-shadow);
+    font-size: 0.7rem;
+}
+
+.create-acc .next-btn {
+    margin-top: 0.8rem;
+}
+
+.create-acc .next-btn button {
+    width: 100%;
+    color: var(--smoky-black);
+    background: var(--gradient-yellow);
+}
+
+.create-acc .next-btn button:hover {
+    color: var(--gradient-yellow);
+    background: var(--smoky-black);
+}
+
+.create-acc .next-btn button:active {
+    background: var(--gradient-yellow);
+    color: var(--smoky-black);
+} 
+
+.create-acc .inputs .input label {
+    color: var(--white-shadow);
+    font-size: 0.8rem;
+    margin-bottom: 0.2rem;
+    left: 2rem;
+    top: 1rem;
+}
+
+.create-acc .inputs .input input:focus + i + label,
+.create-acc .inputs .input input:not(:placeholder-shown) + i + label {
+    left: 1.8rem;
+    top: 3px;
+    font-size: 10px !important;
+}
+
+.check {
+    font-size: 0.8rem;
+    color: var(--white-shadow);
+    /* width: 100%; */
+}
+
+.create-acc .terms {
+    margin-top: 0.8rem;
+}
+
+.create-acc .terms a {
+    color: #fff;
+    font-weight: 600;
+}

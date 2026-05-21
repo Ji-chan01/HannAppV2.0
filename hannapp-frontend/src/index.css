@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+
+/* ─── Tailwind CSS v4 ─── */
+@import "tailwindcss";
+@import "./pages/LoginPage.css";
+
+/* ─── HannApp Global Base Styles ─── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --color-primary: #7c3aed;
+  --color-primary-light: #a855f7;
+  --color-surface: #16172a;
+  --color-bg: #0f0f1a;
+  --color-border: rgba(255, 255, 255, 0.08);
+
+  font-family: var(--font-sans);
+  color-scheme: dark;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--color-bg);
+}
+
+/* ─── Aurora Animation ─── */
+@keyframes aurora {
+  0%, 100% { transform: translateX(-20%) scale(1.1); opacity: 0.4; }
+  50%       { transform: translateX(20%) scale(0.9); opacity: 0.6; }
+}
+
+.aurora__item {
+  animation: aurora 8s ease-in-out infinite;
+}
+
+/* ─── Scrollbar Styling ─── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(124, 58, 237, 0.4);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(124, 58, 237, 0.7);
+}

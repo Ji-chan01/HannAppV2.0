@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HannApp</title>
+
+    <link rel="icon" href="./assets/images/logo/Untitled103_20250103201128.png">
+
+    <link rel="stylesheet" href="./assets/styles/general.css">
+    <link rel="stylesheet" href="./assets/styles/register.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <article class="left-section">
+        <div class="main">
+            <div class="headers">
+                <p class="up"><span class="h1">HannApp</span> is reliable, secured, and</p>
+                <p class="down">user-friendly!</p>
+            </div>
+            
+            <div class="kaemehan">
+                <h1>Trusted by over</h1>
+                <p><span class="numUser">10,000</span>+</p>
+                <h5>Active Users</h5>
+            </div>
+            
+        </div>
+        <img src="./assets/images/logo/undraw_appreciate-it_aans.svg" alt="">
+    </article> 
+    
+    <form id="registrationForm">
+        <div class="modals name active">
+            <h1>What's your name?</h1>
+            <div class="inputs">
+                <input id="first_name" type="text" placeholder=" ">
+                <label for="">First Name</label>
+            </div>
+            <div class="inputs">
+                <input id="last_name" type="text" placeholder=" ">
+                <label for="">Lastname</label>
+            </div>
+            <div class="next-btn next-btn-name">
+                <button id="nextBtnName" type="button">Next</button>
+            </div>
+        </div>
+
+        <div class="modals gender">
+            <h1>I am . . .</h1>
+            <div class="choice-cont">
+                <div data-gender="male" class="img-cont">
+                    <img class="male" src="./assets/images/dp/avatar-men.png" alt="">
+                    <p class="male">Male <i class="fa-solid fa-mars"></i></p>
+                </div>
+                <div data-gender="female" class="img-cont">
+                    <img class="female" src="./assets/images/dp/avatar-3.png" alt="">
+                    <p class="female">Female <i class="fa-solid fa-venus"></i></p>
+                </div>
+            </div>
+            <div class="next-btn">
+                <button type="button" class="backBtn backGender">Back</button>
+                <button id="nextBtnGender" type="button">Next</button>
+            </div>
+            <input id="gender" type="hidden" placeholder="Gender">
+        </div>
+
+        <div class="modals private-info">
+            <h1>Additional information</h1>
+            <div class="inputs">
+                <p>Birthday:</p>
+                <input id="birthday" type="date">
+            </div>
+            <div class="inputs">
+                <p>Email:</p>
+                <input id="email" type="email" placeholder="example@example.com">
+            </div>
+            <div class="next-btn">
+                <button type="button" class="backBtn backInfos">Back</button>
+                <button id="nextBtnAddInfo" type="button">Next</button>
+            </div>
+        </div>
+
+        <div class="modals dp-cont">
+            <h1>What you look like?</h1>
+            <div class="dp-container">
+                <img src="./assets/gifs/loading.gif" alt="dp">
+                
+                <label for="dp" class="label-change-dp">
+                    <i class="fa-solid fa-camera"></i>
+                </label>
+                <input id="dp" type="file" accept="image/*">
+            </div>
+            <span id="fullname" class="full_name">Please Wait..</span>
+            <div class="next-btn">
+                <button class="backBtn backDp" type="button">Back</button>
+                <button id="nextBtnDp" type="button">Next</button>
+            </div>
+        </div>
+
+        <div class="modals create-acc">
+            <div class="back">
+                <i class="backCreate fa-solid fa-circle-arrow-left"></i>
+            </div>
+            <h1>Create your account</h1>
+            <div class="inputs">
+                <div class="input">
+                    <input id="username" type="text" placeholder=" " required>
+                    <i class="fa-regular fa-user"></i>
+                    <label for="">Username</label>
+                </div>
+                <div class="input">
+                    <input id="pass1" type="password" placeholder=" " required>
+                    <i class="fa-solid fa-lock"></i>
+                    <label for="">Password</label>
+                </div>
+                <div class="input">
+                    <input id="pass2" type="password" placeholder=" " required>
+                    <i class="fa-solid fa-lock"></i>
+                    <label for="">Confirm Password</label>
+                    
+                </div>                
+            </div>
+            <div class="next-btn">
+                <button id="signupBtn" type="button">Sign up</button>
+            </div>
+            <div class="terms">
+                <input id="terms" type="checkbox" checked>
+                <label class="check" for="terms">I agree to the <span><a class="t" href="terms.html" target="_blank">Terms and conditions</a></span> of HannApp</label>
+            </div>
+        </div>
+        <div class="separator">
+            <div class="line"></div>
+            <p>OR</p>
+            <div class="line"></div>
+        </div>
+        <a href="login-page.html">Go back to login page</a>
+    </form>
+
+    <script src="./assets/scripts/registration/registerDom.js"></script>
+    <script type="module" src="./assets/scripts/registration/postRegistration.js"></script>
+    <script src="./assets/scripts/registration/fire.js"></script>
+</body>
+</html>

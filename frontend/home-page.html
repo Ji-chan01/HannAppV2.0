@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HannApp</title>
+
+  <link rel="icon" href="./assets/images/logo/Untitled103_20250103201128.png">
+
+  <link rel="stylesheet" href="./assets/styles/general.css">
+  <link rel="stylesheet" href="./assets/styles/home-page.css">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+  <header class="header">
+    <div class="left-section">
+      <a id="logo" href="home-page.html">
+        <h1>HannApp
+          <div class="aurora">
+            <div class="aurora__item"> </div>
+            <div class="aurora__item"> </div>
+            <div class="aurora__item"> </div>
+            <div class="aurora__item"> </div>
+          </div>
+        </h1>
+      </a>
+
+      <div class="search-bar">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input id="searchUsers" type="search" placeholder="Search...">
+        <div class="searched-items-cont">
+
+        </div>
+      </div>
+    </div>
+    <div class="right-section">
+      <div class="menu-items">
+        <a href="home-page.html" class="menu-item">
+          <span><i class="fa-solid fa-house"></i></span>
+          <h6>Home</h6>
+        </a>
+        <a href="#" class="menu-item">
+          <label class="dayNight">
+            <input type="checkbox">
+            <div></div>
+          </label>
+        </a>
+        <a href="#" class="menu-item">
+          <span><i class="fa-regular fa-bookmark"></i></span>
+        </a>
+        <a href="#" class="menu-item">
+          <span><i class="fa-solid fa-bell"></i></span>
+        </a>
+      </div>
+
+      <div class="profile-dropdown">
+        <div class="profile-picture">
+          <img class="myProfilePic" src="./assets/gifs/loading.gif" alt="">
+        </div>
+        <p class="profile_name">Loading please wait...</p>
+        <i class="fa-solid fa-sort-down"></i>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-container">
+    <aside class="left-sidebar">
+      <div class="profile-container">
+        <div class="top-nav">
+          <figure id="userProfile">
+            <img class="myProfilePic" src="./assets/gifs/loading.gif" alt="">
+            <div class="active"></div>
+            <h3 class="user_name"></h3>
+          </figure>
+        </div>
+
+        <div class="line-separator"></div>
+
+        <div class="mid-nav">
+          <h4 class="sub-header">BIO</h4>
+          <p>
+            Lorem ipsum dolor sit amet. Consectetur adipiscing
+            elit. Proin at gravida velit.
+          </p>
+        </div>
+
+        <div class="line-separator"></div>
+
+        <div class="mid-nav">
+          <h4 class="sub-header">TAGS</h4>
+          <input class="myTags" placeholder="Loving" type="text" disabled>
+          <input class="myTags" placeholder="Caring" type="text" disabled>
+          <input class="myTags" placeholder="Cat-lover" type="text" disabled>
+        </div>
+
+        <div class="bot-nav">
+          <a class="profile">My Profile</a>
+        </div>
+      </div>
+
+    </aside>
+
+    <section class="middle">
+      <form id="postForm" class="create-post" enctype="multipart/form-data">
+        <div class="dp-container">
+          <div class="profile-picture">
+            <img class="myProfilePic" src="./assets/gifs/loading.gif" alt="">
+          </div>
+        </div>
+
+        <div class="inputs">
+          <div class="upper-part">
+            <input id="createPost" type="text" placeholder="Loading webpage...">
+          </div>
+          <div id="postImagesCont" class="post-images">
+            <div data-post-img-item="0" class="post-image-cont">
+              <img class="post-img" style="background: white;" src="" alt="">
+              <i data-delete-img="0" class="fa-regular fa-trash-can"></i>
+            </div>
+            <div data-post-img-item="1" class="post-image-cont">
+              <img style="background: white;" src="" alt="">
+              <i data-delete-img="1" class="fa-regular fa-trash-can"></i>
+            </div>
+            <div data-post-img-item="2" class="post-image-cont">
+              <img style="background: white;" src="" alt="">
+              <i data-delete-img="2" class="fa-regular fa-trash-can"></i>
+            </div>
+            <div data-post-img-item="3" class="post-image-cont">
+              <img style="background: white;" src="" alt="">
+              <i data-delete-img="3" class="fa-regular fa-trash-can"></i>
+            </div>
+          </div>
+          <p class="error"></p>
+          <div class="lower-part">
+            <div class="file-uploads">
+              <label for="pic-upload" class="label-upload-pic">
+                <i class="fa-solid fa-image"></i>
+              </label>
+              <input id="pic-upload" type="file" accept="image/*" />
+              <label for="vid-upload" class="label-upload-pic">
+                <i class="fa-solid fa-video"></i>
+              </label>
+              <input id="vid-upload" type="file" accept="image/*" />
+              <label for="vid-upload" class="label-upload-pic">
+                <i class="fa-regular fa-face-smile"></i>
+              </label>
+              <input id="emoji-upload" type="file" accept="image/*" />
+            </div>
+            <button type="submit" id="postNow" class="btn btn-primary">Post</button>
+            <p class="warning">You need to enter input first!</p>
+          </div>
+        </div>
+      </form>
+
+      <div class="feeds" id="feeds">
+
+      </div>
+    </section>
+
+    <aside class="right-sidebar">
+      <div class="following-container">
+        <h4>Following</h4>
+        <div class="line-separator"></div>
+        <div id="followingProfiles" class="following-profiles-cont">
+
+        </div>
+      </div>
+
+      <footer class="footer">
+        <ul class="additional-settings">
+          <li><a href="" class="ul-link">About Us</a></li>
+          <li><a href="" class="ul-link">Terms and Services</a></li>
+          <li><a href="" class="ul-link">Privacy Policy</a></li>
+          <li><a href="" class="ul-link">Hannah AI</a></li>
+          <li><a href="" class="ul-link">Services</a></li>
+          <li><a href="" class="ul-link">Privacy Center</a></li>
+          <li><a href="" class="ul-link">Developers</a></li>
+          <li><a href="" class="ul-link">Terms</a></li>
+          <li><a href="" class="ul-link">Help</a></li>
+        </ul>
+        <div class="copyright">© 2024 HannApp</div>
+      </footer>
+    </aside>
+
+    <div class="comment-section">
+      <div class="card">
+        <div class="comment-header">
+          <h3>Comments</h3><button id="closeCommentModal" class="btn">X</button>
+        </div>
+
+        <div id="commentContainer" class="comment-container">
+
+        </div>
+
+
+        <div class="comment-field search-bar">
+          <img class="myProfilePic" src="./assets/gifs/loading.gif" alt="">
+          <input id="setComment" type="text" placeholder="Add a comment...">
+          <button class="send-message"><i class="fa-regular fa-paper-plane"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-modal">
+      <a class="profile">
+        <div class="profile-picture">
+          <img class="myProfilePic" src="./assets/gifs/loading.gif" alt="">
+        </div>
+        <div class="handle">
+          <h4 class="profile_name">Loading...</h4>
+          <p class="user_name text-muted">Loading...</p>
+        </div>
+      </a>
+      <div>
+        <a href="settings.html?entry_point=account_settings" class="menu-item">
+          <span><i class="fa-solid fa-wrench"></i></span>
+          <h3>Account Settings</h3>
+        </a>
+        <div id="logout_btn" class="menu-item">
+          <span><i class="fa-solid fa-right-from-bracket"></i></span>
+          <h3>Log Out</h3>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script>
+    $('.dayNight input').change(function () {
+      $('body').toggleClass('day', $(this).is(':checked'))
+    });
+  </script>
+
+  <script type="module" src="./assets/scripts/homepage/functionDom.js"></script>
+  <script type="module" src="./assets/scripts/homepage/fetchData.js"></script>
+  <script type="module" src="./assets/scripts/homepage/post.js"></script>
+</body>
+
+</html>

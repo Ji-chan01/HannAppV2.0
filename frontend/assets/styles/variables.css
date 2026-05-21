@@ -1,0 +1,67 @@
+@font-face {
+  font-family: 'Poppins';
+  src: url('./fonts/Poppins/Poppins-Regular.ttf');
+}
+
+@font-face {
+  font-family: 'PoppinsBold';
+  src: url('./fonts/Poppins/Poppins-ExtraBold.ttf');
+}
+
+
+:root {
+  --bg: #000000;
+  --clr-1: #00c2ff;
+  --clr-2: #33ff8c;
+  --clr-3: #ffc640;
+  --clr-4: #e54cff;
+  --blur: 1rem;
+  --fs: clamp(3rem, 8vw, 7rem);
+  --ls: clamp(-1.75px, -0.25vw,
+          -3.5px);
+
+  --jet: hsl(0, 0%, 29%); /* BORDER COLOR, SEPARATOR */
+  --smoky-black: hsl(0, 0%, 7%); /* BODY BACKGROUND */
+  --box-shadow: -4px 8px 24px hsla(0, 0%, 0%, 0.25); /* BOX-SHADOW */
+  --box-shadow-2: 0 0 5px hsla(0, 0%, 25%, 0.914); /* BOX-SHADOW */
+  --eerie-black: hsl(240, 2%, 12%); /* SIDEBAR BACKGROUND */
+  --white-shadow: hsl(0,0%, 42%);
+
+  --border-gradient-onyx: linear-gradient(
+    to bottom right, 
+    hsl(0, 0%, 25%) 0%, 
+    hsla(0, 0%, 25%, 0) 50%
+  ); /* ICON-BOX */
+  --bg-gradient-onyx: linear-gradient(
+    to bottom right, 
+    hsl(240, 1%, 25%) 3%, 
+    hsl(0, 0%, 19%) 97%
+  ); /* AVATAR BACKGROUND */
+  --gradient-yellow: #e89b15; /* TEXT COLOR YELLOW */
+  --orange-yellow-crayola: hsl(45, 100%, 72%); /* text color2 */
+  --border-gradient-onyx: linear-gradient(
+    to bottom right, 
+    hsl(0, 0%, 25%) 0%, 
+    hsla(0, 0%, 25%, 0) 50%
+  ); /* BACKGROUND GRADIENT BTN */
+  --bg-gradient-jet: linear-gradient(
+    to bottom right, 
+    hsla(240, 1%, 18%, 0.251) 0%, 
+    hsla(240, 2%, 11%, 0) 100%
+  ), hsl(240, 2%, 13%); /* DASHBOARD CONTAINER BG */
+  --border-gradient-onyx: linear-gradient(
+    to bottom right, 
+    hsl(0, 0%, 25%) 0%, 
+    hsla(0, 0%, 25%, 0) 50%
+  ); /* BUTTON BACKGROUND */
+  --bg-gradient-yellow-1: linear-gradient(
+    to bottom right, 
+    hsl(45, 100%, 71%) 0%, 
+    hsla(36, 100%, 69%, 0) 50%
+  ); /* BUTTON HOVER BG */
+
+  --light-gray: hsl(0, 0%, 84%); /* DEFAULT TEXT COLOR */
+
+  --ff-poppins: 'Poppins', sans-serif;
+  --ff-poppins-bold: 'PoppinsBold'
+}

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HannApp</title>
+
+    <link rel="icon" href="./assets/images/logo/Untitled103_20250103201128.png">
+
+    <link rel="stylesheet" href="./assets/styles/general.css">
+    <link rel="stylesheet" href="./assets/styles/profile.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+        <div class="left-section">
+            <a id="logo" href="home-page.html">
+                <h1>HannApp
+                    <div class="aurora">
+                        <div class="aurora__item"> </div>
+                        <div class="aurora__item"> </div>
+                        <div class="aurora__item"> </div>
+                        <div class="aurora__item"> </div>
+                    </div>
+                </h1>
+            </a>
+            <div class="search-bar">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input id="searchUsers" type="search" placeholder="Search...">
+
+                <div class="searched-items-cont">
+          
+                </div>
+            </div>
+        </div>
+        <div class="right-section">
+            <div class="menu-items">
+            <a href="home-page.html" class="menu-item">
+                <span><i class="fa-solid fa-house"></i></span><h6>Home</h6>
+            </a>
+            <a href="#" class="menu-item">
+                <label class="dayNight">
+                <input type="checkbox">
+                <div></div>
+                </label>
+            </a>
+            <a href="#" class="menu-item">
+                <span><i class="fa-regular fa-bookmark"></i></span>
+            </a>
+            <a href="#" class="menu-item">
+                <span><i class="fa-solid fa-bell"></i></span>
+            </a>
+            </div>
+
+            <div class="profile-dropdown">
+            <div class="profile-picture">
+                <img class="user-dp" src="./assets/gifs/loading.gif" alt="">
+            </div>
+            <p class="user_name">Loading please wait...</p>
+            <i class="fa-solid fa-sort-down"></i>
+            </div>
+        </div>
+    </header>
+    <div class="profile-modal">
+        <a href="profile.html" class="profile">
+          <div class="profile-picture">
+            <img class="user-dp" src="./assets/gifs/loading.gif" alt="">
+          </div>
+          <div class="handle">
+            <h4 class="user_name">Loading...</h4>
+            <p class="user_username text-muted">Loading...</p>
+          </div>
+        </a>
+        <div>
+          <a href="settings.html?entry_point=account_settings" class="menu-item">
+            <span><i class="fa-solid fa-wrench"></i></span><h3>Account Settings</h3>
+          </a>
+          <div id="logout_btn" class="menu-item">
+            <span><i class="fa-solid fa-right-from-bracket"></i></span><h3>Log Out</h3>
+          </div>
+        </div>
+        
+    </div>
+    <main class="main-container">
+        <section class="top-info">
+            <div class="top-sec">
+                <div class="cover-cont">
+                    <img src="./assets/testImages/2785e4160c717d329d7770799f68ff3a.jpg" alt="">
+                </div>
+                <div class="dp-cont">
+                    <img class="profile-dp" src="./assets/gifs/loading.gif" alt="">
+                    <h1 class="profile_name">Loading name...</h1>
+                    <div class="top-buttons">
+                        <button id="addFriend">Friends <span class="badge">&#x2713;</span></button>
+                        <button id="sendMessage">Message</button>
+                    </div>
+                    <p>
+                        Lorem ipsum dolor sit amet. Consectetur adipiscing
+                        elit. Proin at gravida velit.
+                    </p>
+                </div>
+            </div>
+            
+        </section>
+        
+        <section class="posts-cont">
+            <header class="bot-sec">
+                <div class="control-bot-style">
+                    <div class="left-sec">
+                        <ul class="left-nav">
+                            <li><button id="postBtn" class="nav-link active"><h3>Post</h3></button></li>
+                            <li><button id="aboutBtn" class="nav-link"><h3>About</h3></button></li>
+                            <li><button id="friendsBtn" class="nav-link"><h3>Friends</h3></button></li>
+                        </ul>
+                    </div>
+                    <div class="right-sec">
+                        <ul class="right-nav">
+                            <li><button class="nav-link"><h3>Photos</h3></button></li>
+                            <li><button class="nav-link"><h3>Videos</h3></button></li>
+                            <li><button class="nav-link"><h3>More</h3></button></li>
+                        </ul>
+                    </div>
+                </div>
+            </header>
+
+            <section class="nav-cont">
+
+                <!-- POST -->
+
+                <div id="post" class="post">
+                    
+                </div>
+    
+                <!-- ABOUT -->
+                <section id="about" class="about">
+                    <aside class="left-profile-info">
+                        <div class="profile-container">
+                            <div class="top-nav">
+                                <div class="cover-cont">
+                                    <img src="./assets/testImages/IMG_20240515_004422.jpg" alt="">
+                                </div>
+                                <div class="dp-cont">
+                                    <img class="profile-dp" src="./assets/gifs/loading.gif" alt="">
+                                    <label for="pic-upload" class="change-pic label-change-dp">
+                                        <i class="fa-solid fa-camera"></i>
+                                    </label>
+                                    <input id="pic-upload" class="change-dp" type="file" accept="image/*" />
+                                    <div>
+                                        <label for="pic-upload" class="change-pic label-change-cover">
+                                            Change cover photo
+                                        </label>
+                                        <input id="pic-upload" type="file" accept="image/*" />
+                                    </div>                                    
+                                    <h2 class="profile_username">Loading username...</h2>
+                                </div>
+                            </div>
+
+                            <div class="bot-nav">
+                                <div class="friendxfollowers-cont">
+                                    <section>
+                                        <h1>1500</h1>
+                                        <p>Friends</p>
+                                    </section>
+                                    <section>
+                                        <h1>789</h1>
+                                        <p>Followers</p>
+                                    </section>
+                                </div>
+                                <div class="bot-nav-body">
+                                    <h4 class="sub-header">TAGS</h4>
+                                    <section class="tag-container">
+                                      <input class="myTags" placeholder="Loving" type="text" disabled>
+                                      <input class="myTags" placeholder="Caring" type="text" disabled>
+                                      <input class="myTags" placeholder="Cat-lover" type="text" disabled>
+                                    </section>
+                                </div>
+      
+                                <div class="line-separator"></div>
+      
+                                <div class="bot-nav-links">
+                                    <h4 class="sub-header">Contact info</h4>
+                                    <ul class="nav-links">
+                                      <li><a href="" class="ul-link"><i class="fa-brands fa-facebook"></i>Facebook</a></li>
+                                      <li><a href="" class="ul-link"><i class="fa-brands fa-instagram"></i>Instagram</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+
+                        </div>
+                    </aside>
+                    <section class="main-info-cont">
+                        <div class="infos-cont">
+                            <div class="informations">
+                                <div class="info-cont">
+                                    <h1><span style="color: crimson;">Public</span> Information</h1>
+                                    <div class="details">
+                                        <div class="icons">
+                                            <i class="fa-solid fa-location-dot"></i>
+                                            <i class="fa-solid fa-house-user"></i>
+                                        </div>
+                                        <div class="det">
+                                            <p>From <b>Kinamaligan,</b> Masbate City</p>
+                                            <p>Lives In <b>Kinamaligan,</b> Masbate City</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="info-cont">
+                                    <div class="details">
+                                        <div class="icons">
+                                            <i class="fa-solid fa-cake-candles"></i> 
+                                            <i class="fa-solid fa-venus-mars"></i>
+                                        </div>
+                                        <div class="det">
+                                            <p>Birthday: <span id="birthday">July 20, 2004</span></p>
+                                            <p>Gender: <span id="gender">Female</span></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        <img src="./assets/testImages/1735362964968-removebg-preview.png" alt="">
+                    </section>
+                </section>
+
+                <div class="comment-section">
+                    <div class="card">
+                      <div class="comment-header">
+                        <h3>Comments</h3>
+                        <button id="closeCommentModal" class="btn">X</button>
+                    </div>
+                      
+                      <div id="commentContainer" class="comment-container">
+                        
+                      </div>
+
+                      <div class="comment-field">
+                        <img class="user-dp" src="./assets/gifs/loading.gif" alt="">
+                        <input id="setComment" type="text" placeholder="Add a comment..."> 
+                        <button class="send-message"><i class="fa-regular fa-paper-plane"></i></button>
+                      </div>
+                    </div>
+                   </div>
+            </section>
+        </section>
+    </main>
+
+    <script src="./assets/scripts/profiles/profileDom.js"></script>
+    <script type="module" src="./assets/scripts/profiles/fetchProfile.js"></script>
+
+</body>
+</html>

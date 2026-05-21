@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HannApp</title>
+
+    <link rel="icon" href="./assets/images/logo/Untitled103_20250103201128.png">
+
+    <link rel="stylesheet" href="./assets/styles/general.css">
+    <link rel="stylesheet" href="./assets/styles/login-page.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <article class="left-section">
+        <div class="main-content">
+            <h1>HannApp
+                <div class="aurora">
+                    <div class="aurora__item"> </div>
+                    <div class="aurora__item"> </div>
+                    <div class="aurora__item"> </div>
+                    <div class="aurora__item"> </div>
+                </div>
+            </h1>
+            <p>See what's make you different.</p>
+        </div>
+        <div class="img-cont">
+            <img src="./assets/images/logo/undraw_testimonials_4c7y.svg" alt="">
+        </div>
+    </article>
+
+    <form>
+        <h1>Login</h1>
+        <img src="./assets/images/logo/undraw_new-year-2025_1tmm.svg" alt="">
+        <div class="inputs-cont">
+            <div class="inputs">
+                <i class="fa-regular fa-user"></i>
+                <input id="username" name="username" type="text" placeholder="Username" required>
+            </div>
+            <div class="inputs">
+                <i class="fa-solid fa-key"></i>
+                <input id="pass" name="password" type="password" placeholder="Password" required>
+            </div>
+        </div>
+        <div class="buttons">
+            <button id="loginBtn" type="button">Log in</button>
+            <a href="register.html">Create Account</a>
+        </div>
+    </form>
+    <script type="module" src="./assets/scripts/login/authentication.js"></script>
+    <script src="./assets/scripts/registration/fire.js"></script>
+</body>
+</html>
