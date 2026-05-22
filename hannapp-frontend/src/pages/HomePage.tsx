@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Header from '../components/Header';
 import './HomePage.css';
 
 const HomePage: React.FC = () => {
@@ -72,68 +73,7 @@ const HomePage: React.FC = () => {
 
   return (
     <div className={`home-page-wrapper${isDayMode ? ' day' : ''}`}>
-      <header className="header">
-        <div className="left-section">
-          <a id="logo" href="/home" onClick={() => {
-            localStorage.removeItem('profile');
-          }}>
-            <h1>HannApp
-              <div className="aurora">
-                <div className="aurora__item"> </div>
-                <div className="aurora__item"> </div>
-                <div className="aurora__item"> </div>
-                <div className="aurora__item"> </div>
-              </div>
-            </h1>
-          </a>
-
-          <div className="search-bar">
-            <i className="fa-solid fa-magnifying-glass"></i>
-            <input id="searchUsers" type="search" placeholder="Search..." />
-            <div className="searched-items-cont"></div>
-          </div>
-        </div>
-        <div className="right-section">
-          <div className="menu-items">
-            <a href="/home" className="menu-item">
-              <span><i className="fa-solid fa-house"></i></span>
-              <h6>Home</h6>
-            </a>
-            <a href="#" className="menu-item" onClick={(e) => e.preventDefault()}>
-              <label className="dayNight">
-                <input
-                  type="checkbox"
-                  checked={isDayMode}
-                  onChange={(e) => {
-                    const checked = e.target.checked;
-                    setIsDayMode(checked);
-                    if (checked) {
-                      document.body.classList.add('day');
-                    } else {
-                      document.body.classList.remove('day');
-                    }
-                  }}
-                />
-                <div></div>
-              </label>
-            </a>
-            <a href="#" className="menu-item" onClick={(e) => e.preventDefault()}>
-              <span><i className="fa-regular fa-bookmark"></i></span>
-            </a>
-            <a href="#" className="menu-item" onClick={(e) => e.preventDefault()}>
-              <span><i className="fa-solid fa-bell"></i></span>
-            </a>
-          </div>
-
-          <div className="profile-dropdown">
-            <div className="profile-picture">
-              <img className="myProfilePic" src="/assets/gifs/loading.gif" alt="" />
-            </div>
-            <p className="profile_name">Loading please wait...</p>
-            <i className="fa-solid fa-sort-down"></i>
-          </div>
-        </div>
-      </header>
+      <Header isDayMode={isDayMode} setIsDayMode={setIsDayMode} />
 
       <main className="main-container">
         <aside className="left-sidebar">
