@@ -1,0 +1,8 @@
+on this code, put a max width that fits on section middle container so that it will not stretch if the stories are too many, the stories of friends to be loaded must be 5 stories and the last story is blurred.
+
+<div
+              ref={storiesRef}
+              onScroll={checkScroll}
+              className="flex gap-3 overflow-x-auto pb-5 scrollbar-none"
+              style={{ scrollbarWidth: 'none' }}
+            >

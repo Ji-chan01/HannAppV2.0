@@ -29,7 +29,7 @@ async function fetchPosts() {
         if (!response.ok) throw new Error(`Failed to fetch posts: ${response.status}`);
 
         const jsonData = await response.json();
-        
+
         if (jsonData.posts.length > 0) {
             const commentPromises = jsonData.posts.map(post => getComments(post.post_id, user_data.userId));
             const allComments = await Promise.all(commentPromises);
@@ -76,10 +76,10 @@ async function fetchPosts() {
                                         <p>See more</p>
                                     </div>
                                     <div class="image-grid">
-                                        <img class="photo-post" src="${post.image ? 'http://127.0.0.1:8000/media/'+ post.image: ''}" loading="lazy" alt="">
-                                        <img class="photo-post" src="${post.image2 ? 'http://127.0.0.1:8000/media/'+ post.image2: ''}" loading="lazy" alt="">
-                                        <img class="photo-post" src="${post.image3 ? 'http://127.0.0.1:8000/media/' + post.image3: ''}" loading="lazy" alt="">
-                                        <img class="photo-post" src="${post.image4 ? 'http://127.0.0.1:8000/media/' + post.image4: ''}" loading="lazy" alt="">
+                                        <img class="photo-post" src="${post.image ? 'http://127.0.0.1:8000/media/' + post.image : ''}" loading="lazy" alt="">
+                                        <img class="photo-post" src="${post.image2 ? 'http://127.0.0.1:8000/media/' + post.image2 : ''}" loading="lazy" alt="">
+                                        <img class="photo-post" src="${post.image3 ? 'http://127.0.0.1:8000/media/' + post.image3 : ''}" loading="lazy" alt="">
+                                        <img class="photo-post" src="${post.image4 ? 'http://127.0.0.1:8000/media/' + post.image4 : ''}" loading="lazy" alt="">
                                     </div>
                                 </div>
                                 <div class="reactions">
@@ -152,10 +152,10 @@ async function fetchPosts() {
                     }
                 });
 
-                
+
             }
-                    
-            
+
+
         } else if (page === 1) {
             if (!document.querySelector(".noFriends")) {
                 const node = document.createElement("div");
@@ -172,7 +172,7 @@ async function fetchPosts() {
                 if (feedContainer) {
                     feedContainer.appendChild(node);
                 }
-                
+
             }
         } else {
             allPostsFetched = true;
@@ -203,7 +203,7 @@ export async function addEventListeners(node) {
             modal.style.visibility = "visible";
             card.style.opacity = 1;
             card.style.transform = "scale(1)";
-            
+
             const comments = await getComments(postId, user_data.userId);
             const commentContainer = document.getElementById("commentContainer");
             commentContainer.innerHTML = "";
@@ -232,17 +232,17 @@ export async function addEventListeners(node) {
                 });
             } else {
                 const commentNode = document.createElement("div");
-                    commentNode.className = "main-comment";
-                    commentNode.style.display = "block"
-                    commentNode.style.borderBottom = "none";
-                    commentNode.style.marginTop = "1rem";
-                    commentNode.innerHTML = `
+                commentNode.className = "main-comment";
+                commentNode.style.display = "block"
+                commentNode.style.borderBottom = "none";
+                commentNode.style.marginTop = "1rem";
+                commentNode.innerHTML = `
                         <h2 style="color: var(--light-gray);">Be the first one to comment!</h2>
                         <p style="color: var(--light-gray); font-size:0.6rem;">Keep the comment section respectful and kind to everyone. Let's spread positivity!</p>
                     `;
-                    commentContainer.appendChild(commentNode);
-            }            
-        }); 
+                commentContainer.appendChild(commentNode);
+            }
+        });
     });
 }
 
@@ -329,9 +329,9 @@ export async function fetchUserPost(profileId) {
                 postContainer.appendChild(postElement);
                 addEventListenersProfile(postElement);
             }
-            
+
         });
-        newPage++;  
+        newPage++;
     }
 
     isLoading2 = false;
@@ -350,7 +350,7 @@ async function addEventListenersProfile(node) {
             modal.style.visibility = "visible";
             card.style.opacity = 1;
             card.style.transform = "scale(1)";
-            
+
             const comments = await getComments(postId, p);
             const commentContainer = document.getElementById("commentContainer");
             commentContainer.innerHTML = "";
@@ -379,26 +379,26 @@ async function addEventListenersProfile(node) {
                 });
             } else {
                 const commentNode = document.createElement("div");
-                    commentNode.className = "main-comment";
-                    commentNode.style.display = "block"
-                    commentNode.style.borderBottom = "none";
-                    commentNode.style.marginTop = "1rem";
-                    commentNode.innerHTML = `
+                commentNode.className = "main-comment";
+                commentNode.style.display = "block"
+                commentNode.style.borderBottom = "none";
+                commentNode.style.marginTop = "1rem";
+                commentNode.innerHTML = `
                         <h2 style="color: var(--light-gray);">Be the first one to comment!</h2>
                         <p style="color: var(--light-gray); font-size:0.6rem;">Keep the comment section respectful and kind to everyone. Let's spread positivity!</p>
                     `;
-                    commentContainer.appendChild(commentNode);
-            }            
-        }); 
+                commentContainer.appendChild(commentNode);
+            }
+        });
     });
 }
 
 
 
 document.querySelectorAll('.profile').forEach(profile => {
-        profile.addEventListener('click', async () => {
-            const user_data = await loadFromLocalStorage("Hannah143", "user_data");
-            window.location.href = `/profile?p=${user_data.userId}`;
+    profile.addEventListener('click', async () => {
+        const user_data = await loadFromLocalStorage("Hannah143", "user_data");
+        window.location.href = `/profile?p=${user_data.userId}`;
     });
 });
 
@@ -445,7 +445,7 @@ async function getFriends() {
 
 document.addEventListener('DOMContentLoaded', function () {
     const searchInput = document.getElementById('searchUsers');
-    
+
     if (searchInput) {
         searchInput.addEventListener('input', searchUsers);
     }
@@ -456,17 +456,17 @@ export async function searchUsers() {
     const user_data = await loadFromLocalStorage("Hannah143", "user_data");
 
     if (query) {
-            const res = await fetch(`${localhost}/api/search-users/?q=${query}&userId=${user_data.userId}`);
-            const data =await res.json()
-            if (data.friends) {
-                const user_cont = document.querySelector('.searched-items-cont');
-                user_cont.innerHTML = '';
+        const res = await fetch(`${localhost}/api/search-users/?q=${query}&userId=${user_data.userId}`);
+        const data = await res.json()
+        if (data.friends) {
+            const user_cont = document.querySelector('.searched-items-cont');
+            user_cont.innerHTML = '';
 
-                data.friends.forEach(user => {
-                    const users = document.createElement('div');
-                    users.setAttribute('data-id', user.id);
-                    users.classList.add('searched-item');
-                    users.innerHTML = `
+            data.friends.forEach(user => {
+                const users = document.createElement('div');
+                users.setAttribute('data-id', user.id);
+                users.classList.add('searched-item');
+                users.innerHTML = `
                         <div class="profile-picture">
                             <img class="myProfilePic" src="http://127.0.0.1:8000${user.dp}" alt="">
                         </div>
@@ -475,19 +475,19 @@ export async function searchUsers() {
                             <p class="text-muted">${user.username}</p>
                         </div>
                     `;
-                    user_cont.appendChild(users);
+                user_cont.appendChild(users);
             });
-            user_cont.addEventListener('click', function(event) {
+            user_cont.addEventListener('click', function (event) {
                 const clickedUser = event.target.closest('.searched-item');
                 if (clickedUser) {
                     const userId = clickedUser.dataset.id;
                     window.location.href = `/profile?p=${userId}`;
                 }
             });
-            } else {
-                console.log("no friends")
-            }
-        
+        } else {
+            console.log("no friends")
+        }
+
     } else {
         document.querySelector('.searched-items-cont').innerHTML = '';
     }
@@ -518,7 +518,7 @@ function loadMockPosts() {
     const samplePosts = [
         {
             post_id: 101,
-            full_name: "Hannah Watson",
+            full_name: "John Watson",
             username: "@hannah_w",
             profile_picture: "/assets/images/dp/avatar-3.png",
             postAt: new Date(Date.now() - 3600000 * 2).toISOString(),
