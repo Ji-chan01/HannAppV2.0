@@ -15,7 +15,9 @@ const HomePage: React.FC = () => {
   const [storyIndex, setStoryIndex] = useState(0);
   const [addStoryOpen, setAddStoryOpen] = useState(false);
 
-  /* ─── Scroll states for homepage stories container ─── */
+  /* ─── Story pagination ─────────────────────────────── */
+  const STORIES_PER_PAGE = 5;
+  const [storiesPage, setStoriesPage] = useState(0);
   const storiesRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -50,16 +52,32 @@ const HomePage: React.FC = () => {
       image: '/assets/testImages/IMG_20240515_004422.jpg',
       time: '12 hours ago',
     },
-    // {
-    //   id: 5,
-    //   name: 'Lily Moore',
-    //   avatar: '/assets/images/dp/avatar-3.png',
-    //   image: '/assets/testImages/2785e4160c717d329d7770799f68ff3a.jpg',
-    //   time: '1 day ago',
-    // },
+    {
+      id: 5,
+      name: 'Lily Moore',
+      avatar: '/assets/images/dp/avatar-3.png',
+      image: '/assets/testImages/2785e4160c717d329d7770799f68ff3a.jpg',
+      time: '1 day ago',
+    },
+    {
+      id: 6,
+      name: 'Lily Moore2',
+      avatar: '/assets/images/dp/avatar-3.png',
+      image: '/assets/testImages/IMG_20240515_004422.jpg',
+      time: '1 day ago',
+    },
   ];
 
   const openStory = (i: number) => { setStoryIndex(i); setStoryOpen(true); };
+
+  /* ─── Pagination helpers ──────────────────────────── */
+  const totalStories = STORIES.length;
+  // Advance by (STORIES_PER_PAGE - 1) so the blurred item becomes the first item of the next page
+  const pageStart = storiesPage * (STORIES_PER_PAGE - 1);
+  const pageEnd = Math.min(pageStart + STORIES_PER_PAGE, totalStories);
+  const visibleStories = STORIES.slice(pageStart, pageEnd);
+  const hasNextPage = pageEnd < totalStories;
+  const hasPrevPage = storiesPage > 0;
 
   /* ─── Scroll check for homepage stories strip ─── */
   const checkScroll = () => {
@@ -167,125 +185,175 @@ const HomePage: React.FC = () => {
       <Header isDayMode={isDayMode} setIsDayMode={setIsDayMode} />
 
       <main className="main-container flex p-8 px-6 w-full max-w-full gap-6">
-        <aside className="left-sidebar flex-[1.1] w-[40rem] flex flex-col gap-6">
-          <div className="profile-container flex flex-col bg-[var(--eerie-black)] shadow-[var(--box-shadow)] rounded-[20px] w-full gap-4 p-8 px-4 pb-[0.8rem] justify-between sticky top-12 max-h-max">
-            <div className="top-nav">
-              <figure id="userProfile" className="flex flex-col items-center gap-[15px] relative">
-                <img className="myProfilePic border border-white rounded-full h-20 w-20 border-[0.2rem] shadow-[var(--box-shadow)]" src="/assets/gifs/loading.gif" alt="" />
-                <div className="active w-5 h-5 bg-green-600 rounded-full border-[0.2rem] border-white absolute bottom-[38%] right-[33%]"></div>
-                <h3 className="user_name text-[var(--orange-yellow-crayola)]"></h3>
-              </figure>
+        <aside className="left-sidebar flex-[1.1] w-[40rem] flex flex-col gap-3 sticky top-12 max-h-max">
+
+          {/* ── TOP: Clickable Profile Card ─────────────────── */}
+          <a
+            href="#"
+            onClick={(e) => { e.preventDefault(); navigate('/profile'); }}
+            className="sidebar-profile-card flex items-center gap-3 bg-[var(--eerie-black)] shadow-[var(--box-shadow)] rounded-[16px] w-full p-3 hover:bg-[var(--jet)] transition-colors duration-150 group"
+          >
+            <div className="relative flex-shrink-0">
+              <img
+                className="myProfilePic rounded-full h-12 w-12 object-cover border-2 border-[var(--gradient-yellow)]/60 shadow-[var(--box-shadow)]"
+                src="/assets/gifs/loading.gif"
+                alt="Profile"
+              />
+              <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-[var(--eerie-black)]" />
+            </div>
+            <div className="flex flex-col min-w-0">
+              <span id="sidebarFullName" className="profile_name text-white text-sm font-semibold truncate leading-tight group-hover:text-[var(--orange-yellow-crayola)] transition-colors">Loading...</span>
+              <span className="user_name text-[var(--light-gray)] text-xs truncate">Loading...</span>
+            </div>
+            <i className="fa-solid fa-chevron-right text-[var(--light-gray)] text-xs ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
+          </a>
+
+          {/* ── MIDDLE: Navigation Links ──────────────────────── */}
+          <nav className="flex flex-col w-full overflow-hidden border-t border-b border-[var(--jet)] py-4">
+            {[
+              { icon: 'fa-solid fa-user-plus', label: 'Friend Requests', href: '#' },
+              { icon: 'fa-solid fa-film', label: 'Reels', href: '#' },
+              { icon: 'fa-solid fa-bag-shopping', label: 'Shop', href: '#' },
+              { icon: 'fa-solid fa-users', label: 'Groups', href: '#' },
+            ].map(({ icon, label, href }) => (
+              <a
+                key={label}
+                href={href}
+                onClick={(e) => e.preventDefault()}
+                className="flex items-center gap-3 px-4 py-3 text-[var(--light-gray)] hover:bg-[var(--jet)] hover:text-white transition-colors duration-150 group"
+              >
+                <div className="w-9 h-9 rounded-full bg-[var(--smoky-black)] flex items-center justify-center flex-shrink-0 group-hover:bg-[var(--gradient-yellow)]/15 transition-colors">
+                  <i className={`${icon} text-sm text-[var(--gradient-yellow)]`} />
+                </div>
+                <span className="text-sm font-medium">{label}</span>
+              </a>
+            ))}
+          </nav>
+
+          {/* ── BOTTOM: Games ────────────────────────────────── */}
+          <div className="flex flex-col w-full p-4 gap-3">
+            {/* Header */}
+            <div className="flex items-center justify-between">
+              <h5 className="text-white font-bold text-xl">Games</h5>
+              <a
+                href="#"
+                onClick={(e) => e.preventDefault()}
+                className="text-[var(--gradient-yellow)] text-sm font-semibold hover:underline"
+              >
+                Show all
+              </a>
             </div>
 
-            <div className="line-separator w-[70%] align-self-center h-[1px] bg-[var(--jet)] mx-auto"></div>
-
-            <div className="mid-nav">
-              <h4 className="sub-header text-[var(--light-gray)] mb-2 font-semibold">BIO</h4>
-              <p className="text-[var(--light-gray)] text-xs">
-                Lorem ipsum dolor sit amet. Consectetur adipiscing
-                elit. Proin at gravida velit.
-              </p>
-            </div>
-
-            <div className="line-separator w-[70%] align-self-center h-[1px] bg-[var(--jet)] mx-auto"></div>
-
-            <div className="mid-nav">
-              <h4 className="sub-header text-[var(--light-gray)] mb-2 font-semibold">TAGS</h4>
-              <input className="myTags max-w-max my-1 mx-2 bg-[var(--smoky-black)] border-none outline-none p-2 rounded-[5px] text-[11px] text-[var(--light-gray)]" placeholder="Loving" type="text" disabled />
-              <input className="myTags max-w-max my-1 mx-2 bg-[var(--smoky-black)] border-none outline-none p-2 rounded-[5px] text-[11px] text-[var(--light-gray)]" placeholder="Caring" type="text" disabled />
-              <input className="myTags max-w-max my-1 mx-2 bg-[var(--smoky-black)] border-none outline-none p-2 rounded-[5px] text-[11px] text-[var(--light-gray)]" placeholder="Cat-lover" type="text" disabled />
-            </div>
-
-            <div className="bot-nav flex justify-center">
-              <a className="profile text-[var(--light-gray)] text-xs transition-all duration-150 p-4 w-full text-center rounded-b-[1rem] border-t border-[var(--jet)] hover:text-[var(--orange-yellow-crayola)] hover:bg-[var(--smoky-black)]" href="#" onClick={(e) => { e.preventDefault(); navigate('/profile'); }}>My Profile</a>
+            {/* 2-column grid */}
+            <div className="grid grid-cols-2 gap-2">
+              {/* Tetris placeholder */}
+              <button
+                className="flex flex-col items-center gap-1.5 p-2 rounded-xl hover:bg-[var(--jet)] transition-colors cursor-pointer group"
+                onClick={() => { }}
+                aria-label="Play Tetris"
+              >
+                <div className="w-full aspect-square rounded-xl overflow-hidden shadow-md">
+                  <img
+                    src="/assets/images/games/tetris.png"
+                    alt="Tetris"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                  />
+                </div>
+                <span className="text-[var(--light-gray)] text-xs font-medium truncate w-full text-center group-hover:text-white transition-colors">Tetris</span>
+              </button>
             </div>
           </div>
+
         </aside>
 
-        <section className="middle w-full h-full p-[15px_20px] flex flex-col flex-[3] gap-0">
-          <div className="w-full relative group/stories">
-            {/* Previous Button */}
-            {canScrollLeft && (
+        <section className="middle w-full h-full p-[15px_20px] flex flex-col flex-[3] gap-0 min-w-0">
+          <div className="w-full relative">
+            {/* ── Prev page button ─────────────────────────────── */}
+            {hasPrevPage && (
               <button
                 type="button"
-                onClick={() => scrollStories('left')}
-                className="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-black/60 hover:bg-black/80 text-white flex items-center justify-center shadow-lg border border-white/10 transition-all cursor-pointer"
-                aria-label="Scroll stories left"
+                onClick={() => setStoriesPage(p => p - 1)}
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-black/70 hover:bg-black/90 text-white flex items-center justify-center shadow-lg border border-white/15 transition-all cursor-pointer"
+                aria-label="Previous stories"
               >
                 <i className="fa-solid fa-chevron-left text-xs" />
               </button>
             )}
 
+            {/* ── Stories strip (max-width keeps it inside the middle column) ── */}
             <div
               ref={storiesRef}
-              onScroll={checkScroll}
-              className="flex gap-3 overflow-x-auto pb-5 scrollbar-none"
-              style={{ scrollbarWidth: 'none' }}
+              className="flex gap-3 pb-8 overflow-x-hidden max-w-full"
             >
-
+              {/* Add Story tile – always visible */}
               <button
                 onClick={() => setAddStoryOpen(true)}
                 className="flex-shrink-0 flex flex-col items-center gap-1.5 cursor-pointer group"
                 aria-label="Add your story"
               >
-                <div className="relative w-30 h-43 rounded-xl overflow-hidden border border-[var(--gradient-yellow)]/60 group-hover:border-[var(--gradient-yellow)] transition-colors bg-[var(--smoky-black)]">
-                  {/* My profile pic fills the tile */}
-                  <img
-                    className="myProfilePic w-full h-full object-cover opacity-50"
-                    src="/assets/gifs/loading.gif"
-                    alt="Add story"
-                  />
-                  <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-6 h-6 rounded-full bg-[var(--gradient-yellow)] flex items-center justify-center shadow-md">
+                <div className="relative w-[7rem] h-[10.75rem] rounded-xl overflow-hidden border border-[var(--gradient-yellow)]/60 group-hover:border-[var(--gradient-yellow)] transition-colors bg-[var(--smoky-black)]">
+
+                  <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-6 h-6 rounded-full bg-[var(--gradient-yellow)] flex items-center justify-center shadow-md">
                     <i className="fa-solid fa-plus text-[10px] text-black" />
                   </div>
-
-                  <span className="text-[10px] text-[var(--light-gray)] font-medium w-16 text-center truncate leading-tight">
+                  <span className="absolute bottom-4 left-1/2 -translate-x-1/2 text-[12px] text-[var(--light-gray)] font-medium w-16 text-center truncate leading-tight">
                     Add Story
                   </span>
                 </div>
               </button>
 
-              {/* ── Friends' story tiles ─────────────────────────────── */}
-              {STORIES.map((story, i) => (
-                <button
-                  key={story.id}
-                  onClick={() => openStory(i)}
-                  className="flex-shrink-0 flex flex-col items-center gap-1.5 cursor-pointer group"
-                  aria-label={`View ${story.name}'s story`}
-                >
-                  <div className="relative w-30 h-43 rounded-xl overflow-hidden">
-                    {/* Story thumbnail */}
-                    <img
-                      src={story.image}
-                      alt={story.name}
-                      className="w-full h-full object-cover brightness-75 group-hover:brightness-90 transition-all duration-200"
-                    />
-                    {/* Gradient overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/60" />
+              {/* ── Friends' story tiles (current page batch) ─── */}
+              {visibleStories.map((story, localIdx) => {
+                const globalIdx = pageStart + localIdx;
+                // The last tile in the batch is blurred if there's a next page
+                const isLastTile = localIdx === visibleStories.length - 1;
+                const showBlur = isLastTile && hasNextPage;
 
-                    <div className="absolute top-1.5 left-1.5 w-7 h-7 rounded-full border-2 border-[var(--gradient-yellow)] overflow-hidden shadow-md">
-                      <img src={story.avatar} alt={story.name} className="w-full h-full object-cover" />
-                    </div>
+                return (
+                  <div key={story.id} className="relative flex-shrink-0">
+                    <button
+                      onClick={() => !showBlur && openStory(globalIdx)}
+                      className={`flex flex-col items-center gap-1.5 cursor-pointer group ${showBlur ? 'pointer-events-none' : ''}`}
+                      aria-label={`View ${story.name}'s story`}
+                      tabIndex={showBlur ? -1 : 0}
+                    >
+                      <div
+                        className="relative w-[7rem] h-[10.75rem] rounded-xl overflow-hidden"
+                        style={showBlur ? { filter: 'blur(4px)', transform: 'scale(0.97)', transition: 'filter 0.2s' } : {}}
+                      >
+                        <img
+                          src={story.image}
+                          alt={story.name}
+                          className="w-full h-full object-cover brightness-75 group-hover:brightness-90 transition-all duration-200"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/60" />
+                        <div className="absolute top-1.5 left-1.5 w-7 h-7 rounded-full border-2 border-[var(--gradient-yellow)] overflow-hidden shadow-md">
+                          <img src={story.avatar} alt={story.name} className="w-full h-full object-cover" />
+                        </div>
+                        <span className="absolute bottom-1.5 left-0 right-0 text-left ml-1 text-[12px] text-white font-semibold px-0.5 leading-tight truncate">
+                          {story.name}
+                        </span>
+                      </div>
+                    </button>
 
-                    <span className="absolute bottom-1.5 left-0 right-0 text-left ml-1 text-[12px] text-white font-semibold px-0.5 leading-tight truncate">
-                      {story.name}
-                    </span>
+                    {/* ── Blurred "Next" overlay ─── */}
+                    {showBlur && (
+                      <button
+                        type="button"
+                        onClick={() => setStoriesPage(p => p + 1)}
+                        aria-label="Show next stories"
+                        className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-1.5 cursor-pointer rounded-xl bg-black/30 backdrop-blur-[2px] transition-all hover:bg-black/40"
+                      >
+                        <div className="w-9 h-9 rounded-full bg-white/20 border border-white/40 flex items-center justify-center shadow-lg backdrop-blur-sm">
+                          <i className="fa-solid fa-chevron-right text-white text-sm" />
+                        </div>
+                        <span className="text-white text-[11px] font-semibold tracking-wide drop-shadow">Next</span>
+                      </button>
+                    )}
                   </div>
-                </button>
-              ))}
+                );
+              })}
             </div>
-
-            {/* Next Button */}
-            {canScrollRight && (
-              <button
-                type="button"
-                onClick={() => scrollStories('right')}
-                className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-black/60 hover:bg-black/80 text-white flex items-center justify-center shadow-lg border border-white/10 transition-all cursor-pointer"
-                aria-label="Scroll stories right"
-              >
-                <i className="fa-solid fa-chevron-right text-xs" />
-              </button>
-            )}
           </div>
 
           <form id="postForm" className="create-post w-full gap-2 p-[0.8rem_1rem] border border-[var(--jet)] flex relative" encType="multipart/form-data">

@@ -192,13 +192,8 @@ const LoginPage: React.FC = () => {
 
       <article className="relative top-0 left-0 h-auto w-full max-w-[450px] mb-8 flex flex-col items-center text-center z-10 lg:absolute lg:top-1/2 lg:left-[10%] lg:-translate-y-1/2 lg:h-[58%] lg:w-auto lg:max-w-none lg:mb-0 lg:flex-row lg:items-start lg:text-left">
         <div className="flex flex-col">
-          <h1 className="relative overflow-hidden bg-smoky-black border border-smoky-black m-0 mx-auto mb-4 text-[3.5rem] text-orange-yellow-crayola max-w-max px-4 py-0 rounded-[5px] left-0 lg:text-[5rem] lg:left-[-1rem] lg:ml-0 lg:mb-0">HannApp
-            <div className="absolute top-0 left-0 w-full h-full z-2 mix-blend-mode-darken pointer-events-none">
-              <div className="overflow-hidden absolute w-[60vw] h-[60vw] rounded-[37%_29%_27%_27%_/_28%_25%_41%_37%] blur-[1rem] mix-blend-mode-overlay bg-clr-1 top-[-50%] animate-aurora-item-1"></div>
-              <div className="overflow-hidden absolute w-[60vw] h-[60vw] rounded-[37%_29%_27%_27%_/_28%_25%_41%_37%] blur-[1rem] mix-blend-mode-overlay bg-clr-3 right-0 top-0 animate-aurora-item-2"></div>
-              <div className="overflow-hidden absolute w-[60vw] h-[60vw] rounded-[37%_29%_27%_27%_/_28%_25%_41%_37%] blur-[1rem] mix-blend-mode-overlay bg-clr-2 left-0 bottom-0 animate-aurora-item-3"></div>
-              <div className="overflow-hidden absolute w-[60vw] h-[60vw] rounded-[37%_29%_27%_27%_/_28%_25%_41%_37%] blur-[1rem] mix-blend-mode-overlay bg-clr-4 right-0 bottom-[-50%] animate-aurora-item-4"></div>
-            </div>
+          <h1 className="relative overflow-hidden m-0 mx-auto mb-4 text-[3.5rem] text-orange-yellow-crayola max-w-max px-4 py-0 rounded-[5px] left-0 lg:text-[5rem] lg:left-[-1rem] lg:ml-0 lg:mb-0">
+            HannApp
           </h1>
           <p className="text-[1.25rem] font-bold text-white lg:text-[2rem]">See what's make you different.</p>
         </div>

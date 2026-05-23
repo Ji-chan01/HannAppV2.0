@@ -68,6 +68,97 @@ const ProfilePage: React.FC = () => {
     document.title = 'HannApp';
   }, []);
 
+  // Static mock comments per post ID
+  const MOCK_COMMENTS: Record<string, { name: string; dp: string; content: string; time: string }[]> = {
+    '101': [
+      { name: 'John Carter', dp: '/assets/images/dp/avatar-men.png', content: 'This looks absolutely breathtaking! Enjoy the getaway!', time: 'Just now' },
+    ],
+    '102': [],
+    '103': [
+      { name: 'Alex Rivera', dp: '/assets/images/dp/avatar-men.png', content: 'Love the design updates! Very clean.', time: '5 min ago' },
+      { name: 'Maria Santos', dp: '/assets/images/dp/avatar-3.png', content: 'Really premium feel!', time: '3 min ago' },
+      { name: 'John Carter', dp: '/assets/images/dp/avatar-men.png', content: 'Great color palette choice.', time: '1 min ago' },
+    ],
+    '104': [
+      { name: 'Emily Chen', dp: '/assets/images/dp/avatar-3.png', content: 'Beautiful shot! 🌸', time: 'Just now' },
+      { name: 'Alex Rivera', dp: '/assets/images/dp/avatar-men.png', content: 'Nature always wins!', time: '2 min ago' },
+    ],
+    '105': [
+      { name: 'John Carter', dp: '/assets/images/dp/avatar-men.png', content: 'Tailwind v4 is indeed a game changer!', time: '10 min ago' },
+      { name: 'Maria Santos', dp: '/assets/images/dp/avatar-3.png', content: 'Agreed! The performance is 🔥', time: '7 min ago' },
+      { name: 'Alex Rivera', dp: '/assets/images/dp/avatar-men.png', content: 'Component architecture is everything.', time: '4 min ago' },
+      { name: 'Emily Chen', dp: '/assets/images/dp/avatar-3.png', content: 'Can\'t wait for more updates!', time: '2 min ago' },
+      { name: 'Liam Bennett', dp: '/assets/images/dp/avatar-men.png', content: 'Keep up the great work! 🚀', time: '1 min ago' },
+      { name: 'Sophia Reyes', dp: '/assets/images/dp/avatar-3.png', content: 'Loved reading this, very insightful.', time: 'Just now' },
+      { name: 'Daniel Kim', dp: '/assets/images/dp/avatar-men.png', content: 'Shared this with the whole team!', time: 'Just now' },
+      { name: 'Nina Park', dp: '/assets/images/dp/avatar-3.png', content: 'Great perspective on clean code.', time: 'Just now' },
+    ],
+  };
+
+  // Wire up comment click events for static posts
+  useEffect(() => {
+    const modal = document.querySelector<HTMLElement>('.comment-section');
+    const card = document.querySelector<HTMLElement>('.card');
+    const commentContainer = document.getElementById('commentContainer');
+    if (!modal || !card || !commentContainer) return;
+
+    const buttons = document.querySelectorAll<HTMLElement>('.comment[data-comment-id]');
+    const handlers: { el: HTMLElement; fn: () => void }[] = [];
+
+    buttons.forEach((btn) => {
+      const postId = btn.dataset.commentId || '';
+      const comments = MOCK_COMMENTS[postId] ?? [];
+
+      const fn = () => {
+        localStorage.setItem('postId', postId);
+        modal.style.visibility = 'visible';
+        card.style.opacity = '1';
+        card.style.transform = 'scale(1)';
+
+        commentContainer.innerHTML = '';
+        if (comments.length > 0) {
+          comments.forEach((c) => {
+            const node = document.createElement('div');
+            node.className = 'main-comment';
+            node.innerHTML = `
+              <div class="comment-details">
+                <div class="profile-picture">
+                  <img src="${c.dp}" alt="" style="width:35px;height:35px;border-radius:50%;border:1px solid #fff;object-fit:cover;">
+                </div>
+                <div class="comment-body">
+                  <div><a href=""><h5>${c.name}</h5></a><p class="text-muted" style="font-size:0.7rem;">${c.time}</p></div>
+                  <p>${c.content}</p>
+                  <p class="text-muted">Reply</p>
+                </div>
+              </div>
+              <div class="reaction">
+                <i style="cursor:pointer;" class="fa-regular fa-heart"></i>
+                <p class="text-muted">0</p>
+              </div>`;
+            commentContainer.appendChild(node);
+          });
+        } else {
+          const node = document.createElement('div');
+          node.className = 'main-comment';
+          node.style.display = 'block';
+          node.style.borderBottom = 'none';
+          node.style.marginTop = '1rem';
+          node.innerHTML = `
+            <h2 style="color:var(--light-gray);">Be the first one to comment!</h2>
+            <p style="color:var(--light-gray);font-size:0.6rem;">Keep the comment section respectful and kind to everyone.</p>`;
+          commentContainer.appendChild(node);
+        }
+      };
+
+      btn.addEventListener('click', fn);
+      handlers.push({ el: btn, fn });
+    });
+
+    return () => {
+      handlers.forEach(({ el, fn }) => el.removeEventListener('click', fn));
+    };
+  }, []);
+
   // ── Dynamic script loader with event-listener tracking and cleanup ──
   useEffect(() => {
     const originalWindowAdd = window.addEventListener;
@@ -676,12 +767,12 @@ const ProfilePage: React.FC = () => {
               </div>
             </div>
 
-            {/* ── COMMENT SECTION MODAL ── */}
-            <CommentModal isDayMode={isDayMode} />
-
           </section>
         </section>
       </main>
+
+      {/* ── COMMENT SECTION MODAL ── */}
+      <CommentModal isDayMode={isDayMode} />
     </div>
   );
 };
