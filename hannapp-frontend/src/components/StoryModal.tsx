@@ -20,21 +20,21 @@ interface StoryModalProps {
 const STORY_DURATION_MS = 5000;
 
 const StoryModal: React.FC<StoryModalProps> = ({ stories, initialIndex, onClose }) => {
-  const [idx, setIdx]             = useState(initialIndex);
-  const [liked, setLiked]         = useState(false);
-  const [comment, setComment]     = useState('');
-  const [progress, setProgress]   = useState(0);
-  const [menuOpen, setMenuOpen]   = useState(false);
-  const [paused, setPaused]       = useState(false);
-  const intervalRef               = useRef<ReturnType<typeof setInterval> | null>(null);
-  const story                     = stories[idx];
+  const [idx, setIdx] = useState(initialIndex);
+  const [liked, setLiked] = useState(false);
+  const [comment, setComment] = useState('');
+  const [progress, setProgress] = useState(0);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [paused, setPaused] = useState(false);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const story = stories[idx];
 
   /* ── Auto-advance timer ── */
   const startTimer = useCallback(() => {
     if (intervalRef.current) clearInterval(intervalRef.current);
     setProgress(0);
-    const step   = 50;                              // ms per tick
-    let elapsed  = 0;
+    const step = 50;                              // ms per tick
+    let elapsed = 0;
 
     intervalRef.current = setInterval(() => {
       elapsed += step;
@@ -132,9 +132,9 @@ const StoryModal: React.FC<StoryModalProps> = ({ stories, initialIndex, onClose 
             {menuOpen && (
               <div className="absolute right-0 top-10 bg-[var(--eerie-black)] border border-[var(--jet)] rounded-xl shadow-xl w-44 py-1 z-50">
                 {[
-                  { icon: 'fa-share-nodes',   label: 'Share Story'  },
-                  { icon: 'fa-flag',          label: 'Report'       },
-                  { icon: 'fa-volume-xmark',  label: 'Mute'         },
+                  { icon: 'fa-share-nodes', label: 'Share Story' },
+                  { icon: 'fa-flag', label: 'Report' },
+                  { icon: 'fa-volume-xmark', label: 'Mute' },
                 ].map(({ icon, label }) => (
                   <button
                     key={label}
@@ -220,11 +220,10 @@ const StoryModal: React.FC<StoryModalProps> = ({ stories, initialIndex, onClose 
           {/* Heart reaction */}
           <button
             onClick={() => setLiked(l => !l)}
-            className={`w-10 h-10 flex items-center justify-center rounded-full border transition-all cursor-pointer shrink-0 ${
-              liked
+            className={`w-10 h-10 flex items-center justify-center rounded-full border transition-all cursor-pointer shrink-0 ${liked
                 ? 'bg-red-500/20 border-red-400 text-red-400 scale-110'
                 : 'bg-white/10 border-white/20 text-white hover:text-red-400 hover:border-red-400'
-            }`}
+              }`}
             aria-label="Like story"
           >
             <i className={`${liked ? 'fa-solid' : 'fa-regular'} fa-heart text-sm`} />

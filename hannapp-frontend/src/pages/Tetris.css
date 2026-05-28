@@ -1,0 +1,309 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&display=swap');
+
+/* ─── Tetris Custom Styles ─── */
+
+/* Animated starfield background */
+.starfield {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.star {
+  position: absolute;
+  border-radius: 50%;
+  background: white;
+  animation: twinkle linear infinite;
+  opacity: 0;
+}
+
+@keyframes twinkle {
+
+  0%,
+  100% {
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Neon glow utilities */
+.glow-cyan {
+  box-shadow: 0 0 8px #06b6d4, 0 0 20px rgba(6, 182, 212, 0.4);
+}
+
+.glow-violet {
+  box-shadow: 0 0 8px #7c3aed, 0 0 20px rgba(124, 58, 237, 0.4);
+}
+
+.glow-text-cyan {
+  text-shadow: 0 0 10px #06b6d4, 0 0 20px rgba(6, 182, 212, 0.6);
+}
+
+.glow-text-violet {
+  text-shadow: 0 0 10px #a855f7, 0 0 20px rgba(168, 85, 247, 0.6);
+}
+
+/* Game grid cell */
+.cell {
+  border-radius: 2px;
+  transition: background-color 0.05s ease;
+}
+
+/* Row clear flash animation */
+@keyframes rowFlash {
+  0% {
+    opacity: 1;
+    filter: brightness(3);
+  }
+
+  100% {
+    opacity: 0;
+    filter: brightness(1);
+  }
+}
+
+.row-clear-flash {
+  animation: rowFlash 0.15s ease-out forwards;
+}
+
+/* Panel glass effect */
+.glass-panel {
+  background: rgba(15, 15, 30, 0.85);
+  border: 1px solid rgba(124, 58, 237, 0.3);
+  backdrop-filter: blur(12px);
+  border-radius: 12px;
+}
+
+/* Overlay */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 10, 20, 0.88);
+  backdrop-filter: blur(4px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  z-index: 10;
+}
+
+/* Button styles */
+.btn-primary {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 0.6rem 1.8rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, #7c3aed, #4f46e5);
+  color: white;
+  box-shadow: 0 0 16px rgba(124, 58, 237, 0.5);
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #8b5cf6, #6366f1);
+  box-shadow: 0 0 24px rgba(124, 58, 237, 0.8);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  padding: 0.5rem 1.4rem;
+  border-radius: 6px;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid rgba(124, 58, 237, 0.5);
+  color: #a78bfa;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+}
+
+.btn-secondary:hover {
+  border-color: #7c3aed;
+  background: rgba(124, 58, 237, 0.15);
+  color: white;
+}
+
+/* Score label */
+.hud-label {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #6366f1;
+  margin-bottom: 2px;
+}
+
+.hud-value {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #e2e8f0;
+  line-height: 1;
+}
+
+/* Leaderboard */
+.lb-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  transition: background 0.15s;
+}
+
+.lb-row:hover {
+  background: rgba(124, 58, 237, 0.1);
+}
+
+.lb-rank {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  font-size: 0.65rem;
+  width: 22px;
+  text-align: center;
+  color: #6366f1;
+}
+
+.lb-name {
+  flex: 1;
+  color: #cbd5e1;
+  font-size: 0.72rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lb-score {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #a78bfa;
+}
+
+/* Piece colors */
+.piece-I {
+  background: #06b6d4;
+  box-shadow: 0 0 6px rgba(6, 182, 212, 0.6);
+}
+
+.piece-J {
+  background: #3b82f6;
+  box-shadow: 0 0 6px rgba(59, 130, 246, 0.6);
+}
+
+.piece-L {
+  background: #f97316;
+  box-shadow: 0 0 6px rgba(249, 115, 22, 0.6);
+}
+
+.piece-O {
+  background: #eab308;
+  box-shadow: 0 0 6px rgba(234, 179, 8, 0.6);
+}
+
+.piece-S {
+  background: #22c55e;
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.6);
+}
+
+.piece-T {
+  background: #a855f7;
+  box-shadow: 0 0 6px rgba(168, 85, 247, 0.6);
+}
+
+.piece-Z {
+  background: #ef4444;
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.6);
+}
+
+.piece-ghost {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: none;
+}
+
+/* Pulse animation for level up */
+@keyframes levelPulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.08);
+    color: #f59e0b;
+  }
+}
+
+.level-pulse {
+  animation: levelPulse 0.4s ease-in-out;
+}
+
+/* Score pop animation */
+@keyframes scorePop {
+  0% {
+    transform: scale(1);
+  }
+
+  40% {
+    transform: scale(1.2);
+    color: #34d399;
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.score-pop {
+  animation: scorePop 0.35s ease-out;
+}
+
+/* Scanline effect on grid */
+.scanlines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.08) 2px,
+      rgba(0, 0, 0, 0.08) 4px);
+  border-radius: 6px;
+  z-index: 5;
+}
+
+/* Input style for leaderboard name entry */
+.lb-input {
+  background: rgba(15, 15, 30, 0.9);
+  border: 1px solid rgba(124, 58, 237, 0.5);
+  border-radius: 6px;
+  color: #e2e8f0;
+  padding: 0.4rem 0.7rem;
+  font-size: 0.8rem;
+  font-family: 'Inter', sans-serif;
+  outline: none;
+  width: 100%;
+  transition: border-color 0.2s;
+}
+
+.lb-input:focus {
+  border-color: #7c3aed;
+  box-shadow: 0 0 8px rgba(124, 58, 237, 0.4);
+}

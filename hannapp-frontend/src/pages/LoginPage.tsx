@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { saveToLocalStorage } from '../utils/cryptoUtils';
 
 class Particle {
   x: number;
@@ -182,8 +183,42 @@ const LoginPage: React.FC = () => {
   }, []);
 
   const handleLogin = async () => {
-    // Redirect directly to home page for testing
-    navigate('/home');
+    if (!username.trim() || !password.trim()) {
+      alert("Invalid user credentials");
+      return;
+    }
+
+    const payload = {
+      username: username.trim().startsWith('@') ? username.trim() : `@${username.trim()}`,
+      pass: password.trim()
+    };
+
+    try {
+      const res = await fetch("http://127.0.0.1:8000/api/login-authentication/", {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+
+      if (data.status) {
+        if (data.response) {
+          const secretKey = "Hannah143";
+          await saveToLocalStorage(secretKey, 'user_data', data.response);
+        }
+        navigate('/home');
+      } else {
+        alert(data.message || 'Login failed');
+      }
+    } catch (error) {
+      console.error('Error during login:', error);
+      alert('Server is offline. Please contact the system administrator and try again.');
+      // Navigate to home as fallback for testing convenience
+      navigate('/home');
+    }
   };
 
   return (

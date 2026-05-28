@@ -1,23 +1,282 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Header from '../components/Header';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import Header, { formatDpUrl } from '../components/Header';
 import CommentModal from '../components/CommentModal';
+import { loadFromLocalStorage } from '../utils/cryptoUtils';
+import { timeConversion } from '../utils/timeConverter';
 import './ProfilePage.css';
+
+interface ProfilePost {
+  post_id: number;
+  full_name: string;
+  username: string;
+  profile_picture: string;
+  postAt: string;
+  caption: string;
+  content: string;
+  image?: string;
+  likes: number;
+  commentsCount?: number;
+  id?: number;
+}
+
+interface UserProfile {
+  username: string;
+  first_name: string;
+  last_name: string;
+  dp: string;
+  birthday?: string;
+  gender?: string;
+  bio?: string;
+}
 
 const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
-  const [isDayMode, setIsDayMode] = useState(false);
+  const [searchParams] = useSearchParams();
+  const profileId = searchParams.get('p') || '1'; // Default profile to view
 
-  // ── Cover Photo State ──
+  const [isDayMode, setIsDayMode] = useState(false);
+  const [activeTab, setActiveTab] = useState<'posts' | 'about'>('posts');
+
+  // Auth and Profile details
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [profileUser, setProfileUser] = useState<UserProfile | null>(null);
+  const [isFriend, setIsFriend] = useState(false);
+
+  // Profile Feed states
+  const [posts, setPosts] = useState<ProfilePost[]>([]);
+  const [page, setPage] = useState(1);
+  const [isLoadingPosts, setIsLoadingPosts] = useState(false);
+
+  // Interaction States
+  const [likes, setLikes] = useState<Record<number | string, { count: number; liked: boolean }>>({});
+  const [bookmarks, setBookmarks] = useState<Record<number | string, boolean>>({});
+
+  // Comment Modal States
+  const [commentModalOpen, setCommentModalOpen] = useState(false);
+  const [activeCommentPostId, setActiveCommentPostId] = useState<string | number | null>(null);
+
+  // Cover photo repositioning
   const [coverPhoto, setCoverPhoto] = useState<string | null>(null);
   const [coverMode, setCoverMode] = useState<'idle' | 'editing' | 'saved'>('idle');
-  const [imageOffsetY, setImageOffsetY] = useState(50); // percentage: 0=top, 100=bottom
+  const [imageOffsetY, setImageOffsetY] = useState(50);
   const coverFileInputRef = useRef<HTMLInputElement>(null);
+  const coverContainerRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
   const dragStartY = useRef(0);
   const dragStartOffset = useRef(50);
-  const coverContainerRef = useRef<HTMLDivElement>(null);
 
+  // Load current user and profile data
+  useEffect(() => {
+    const loadProfileData = async () => {
+      try {
+        let loggedIn = await loadFromLocalStorage("Hannah143", "user_data");
+        if (!loggedIn) {
+          loggedIn = {
+            userId: 1,
+            username: "@guest_user",
+            first_name: "Guest",
+            last_name: "Visitor",
+            dp: "/assets/images/dp/avatar-men.png",
+            birthday: "2004-07-20",
+            gender: "Female"
+          };
+        }
+        setCurrentUser(loggedIn);
+
+        // Fetch profile user information from backend API
+        const res = await fetch(`http://127.0.0.1:8000/api/fetch-post-profile/?userId=${profileId}&user=${loggedIn.userId}`);
+        if (!res.ok) throw new Error('API offline');
+        const data = await res.json();
+
+        if (data.profile && data.profile[profileId]) {
+          setProfileUser(data.profile[profileId]);
+          setIsFriend(data.isFriend || false);
+        } else {
+          loadMockProfile();
+        }
+      } catch (e) {
+        console.warn('API error, using mock profile details fallback...', e);
+        loadMockProfile();
+      }
+    };
+
+    const loadMockProfile = () => {
+      // Mock profile fallback
+      const mockProfiles: Record<string, UserProfile> = {
+        '101': {
+          first_name: 'Hannah',
+          last_name: 'Watson',
+          username: '@hannah_w',
+          dp: '/assets/images/dp/avatar-3.png',
+          birthday: '2004-07-20',
+          gender: 'Female',
+          bio: 'Masbate mountaineer and adventure seeker 🌲🏔️'
+        },
+        '102': {
+          first_name: 'Liam',
+          last_name: 'Bennett',
+          username: '@liam_b',
+          dp: '/assets/images/dp/avatar-men.png',
+          birthday: '1999-05-15',
+          gender: 'Male',
+          bio: 'Full Stack Engineer | Mechanically Inclined 💻☕'
+        }
+      };
+
+      const selected = mockProfiles[profileId] || {
+        first_name: 'Juan',
+        last_name: 'Teodoro',
+        username: '@denielle',
+        dp: '/assets/images/dp/avatar-3.png',
+        birthday: '2004-07-20',
+        gender: 'Female',
+        bio: 'Frontend enthusiast. HannApp architect.'
+      };
+
+      setProfileUser(selected);
+      setIsFriend(true);
+    };
+
+    loadProfileData();
+    setPage(1);
+    setPosts([]);
+  }, [profileId]);
+
+  // Fetch User Posts on Profile
+  const fetchProfilePosts = async (currentPage: number) => {
+    if (isLoadingPosts) return;
+    setIsLoadingPosts(true);
+
+    try {
+      const res = await fetch(`http://127.0.0.1:8000/api/fetch-post-profile/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: profileId, page: currentPage }),
+      });
+
+      if (!res.ok) throw new Error('API failed');
+      const data = await res.json();
+
+      if (data.posts && data.posts.length > 0) {
+        const mapped: ProfilePost[] = data.posts.map((p: any) => ({
+          post_id: p.post_id,
+          full_name: p.full_name,
+          username: p.username,
+          profile_picture: p.profile_picture,
+          postAt: p.postAt,
+          caption: p.caption,
+          content: p.content,
+          image: p.image ? `http://127.0.0.1:8000/media/${p.image}` : undefined,
+          likes: p.likes || 0,
+          commentsCount: 0,
+          id: p.id
+        }));
+        setPosts(prev => [...prev, ...mapped]);
+        setPage(currentPage + 1);
+      } else {
+        if (currentPage === 1) {
+          loadMockProfilePosts();
+        }
+      }
+    } catch (e) {
+      console.warn('API error listing profile posts, loading fallback mocks...', e);
+      if (currentPage === 1) {
+        loadMockProfilePosts();
+      }
+    } finally {
+      setIsLoadingPosts(false);
+    }
+  };
+
+  const loadMockProfilePosts = () => {
+    const mockPosts: Record<string, ProfilePost[]> = {
+      '101': [
+        {
+          post_id: 101,
+          full_name: "Hannah Watson",
+          username: "@hannah_w",
+          profile_picture: "/assets/images/dp/avatar-3.png",
+          postAt: new Date(Date.now() - 3600000 * 2).toISOString(),
+          caption: "Serene escapes 🌲🏔️",
+          content: "Spending the weekend in the mountains, disconnected from the noise. The fresh alpine air is exactly what I needed!",
+          image: "/assets/testImages/2785e4160c717d329d7770799f68ff3a.jpg",
+          likes: 124,
+          commentsCount: 1,
+          id: 101
+        }
+      ],
+      '102': [
+        {
+          post_id: 102,
+          full_name: "Liam Bennett",
+          username: "@liam_b",
+          profile_picture: "/assets/images/dp/avatar-men.png",
+          postAt: new Date(Date.now() - 3600000 * 5).toISOString(),
+          caption: "Cozy Coding Setup 💻☕",
+          content: "Updated my workspace with some new mechanical keycaps and ambient desk lighting. Productivity has officially doubled!",
+          image: "/assets/testImages/IMG_20240515_004422.jpg",
+          likes: 85,
+          commentsCount: 0,
+          id: 102
+        }
+      ]
+    };
+
+    const selectedPosts = mockPosts[profileId] || [
+      {
+        post_id: 103,
+        full_name: profileUser ? `${profileUser.first_name} ${profileUser.last_name}` : "Juan Teodoro",
+        username: profileUser ? profileUser.username : "@denielle",
+        profile_picture: profileUser ? profileUser.dp : "/assets/images/dp/avatar-3.png",
+        postAt: new Date(Date.now() - 3600000 * 24).toISOString(),
+        caption: "UI Design Updates! 🚀",
+        content: "Just finished designing the new user profile dashboard! The clean aesthetics and unified color palette feel so premium. What do you all think?",
+        likes: 42,
+        commentsCount: 3,
+        id: 103
+      },
+      {
+        post_id: 104,
+        full_name: profileUser ? `${profileUser.first_name} ${profileUser.last_name}` : "Juan Teodoro",
+        username: profileUser ? profileUser.username : "@denielle",
+        profile_picture: profileUser ? profileUser.dp : "/assets/images/dp/avatar-men.png",
+        postAt: new Date(Date.now() - 3600000 * 48).toISOString(),
+        caption: "Nature walk photography 🌸✨",
+        content: "A beautiful morning walk capture! Nature never fails to amaze.",
+        image: "/assets/testImages/2785e4160c717d329d7770799f68ff3a.jpg",
+        likes: 95,
+        commentsCount: 2,
+        id: 104
+      }
+    ];
+
+    setPosts(selectedPosts);
+  };
+
+  // Trigger posts load on profileUser load
+  useEffect(() => {
+    if (profileUser) {
+      fetchProfilePosts(1);
+    }
+  }, [profileUser]);
+
+  // Scroll pagination listener
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY + window.innerHeight;
+      const pageHeight = document.documentElement.scrollHeight;
+
+      if (scrollPosition >= pageHeight - 200) {
+        fetchProfilePosts(page);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [page, isLoadingPosts]);
+
+  // Cover photo change handlers
   const handleCoverFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -25,7 +284,6 @@ const ProfilePage: React.FC = () => {
     setCoverPhoto(url);
     setImageOffsetY(50);
     setCoverMode('editing');
-    // Reset input so the same file can be re-selected
     e.target.value = '';
   };
 
@@ -43,7 +301,6 @@ const ProfilePage: React.FC = () => {
     if (!container) return;
     const containerH = container.getBoundingClientRect().height;
     const deltaY = e.clientY - dragStartY.current;
-    // Each pixel of drag translates to a percentage shift based on container height
     const deltaPercent = (deltaY / containerH) * 100;
     const newOffset = Math.min(100, Math.max(0, dragStartOffset.current - deltaPercent));
     setImageOffsetY(newOffset);
@@ -53,209 +310,42 @@ const ProfilePage: React.FC = () => {
     isDragging.current = false;
   };
 
-  const handleSaveChanges = () => {
-    setCoverMode('saved');
-  };
-
-  const handleCancel = () => {
-    if (coverPhoto) URL.revokeObjectURL(coverPhoto);
-    setCoverPhoto(null);
-    setImageOffsetY(50);
-    setCoverMode('idle');
-  };
-
-  useEffect(() => {
-    document.title = 'HannApp';
-  }, []);
-
-  // Static mock comments per post ID
-  const MOCK_COMMENTS: Record<string, { name: string; dp: string; content: string; time: string }[]> = {
-    '101': [
-      { name: 'John Carter', dp: '/assets/images/dp/avatar-men.png', content: 'This looks absolutely breathtaking! Enjoy the getaway!', time: 'Just now' },
-    ],
-    '102': [],
-    '103': [
-      { name: 'Alex Rivera', dp: '/assets/images/dp/avatar-men.png', content: 'Love the design updates! Very clean.', time: '5 min ago' },
-      { name: 'Maria Santos', dp: '/assets/images/dp/avatar-3.png', content: 'Really premium feel!', time: '3 min ago' },
-      { name: 'John Carter', dp: '/assets/images/dp/avatar-men.png', content: 'Great color palette choice.', time: '1 min ago' },
-    ],
-    '104': [
-      { name: 'Emily Chen', dp: '/assets/images/dp/avatar-3.png', content: 'Beautiful shot! 🌸', time: 'Just now' },
-      { name: 'Alex Rivera', dp: '/assets/images/dp/avatar-men.png', content: 'Nature always wins!', time: '2 min ago' },
-    ],
-    '105': [
-      { name: 'John Carter', dp: '/assets/images/dp/avatar-men.png', content: 'Tailwind v4 is indeed a game changer!', time: '10 min ago' },
-      { name: 'Maria Santos', dp: '/assets/images/dp/avatar-3.png', content: 'Agreed! The performance is 🔥', time: '7 min ago' },
-      { name: 'Alex Rivera', dp: '/assets/images/dp/avatar-men.png', content: 'Component architecture is everything.', time: '4 min ago' },
-      { name: 'Emily Chen', dp: '/assets/images/dp/avatar-3.png', content: 'Can\'t wait for more updates!', time: '2 min ago' },
-      { name: 'Liam Bennett', dp: '/assets/images/dp/avatar-men.png', content: 'Keep up the great work! 🚀', time: '1 min ago' },
-      { name: 'Sophia Reyes', dp: '/assets/images/dp/avatar-3.png', content: 'Loved reading this, very insightful.', time: 'Just now' },
-      { name: 'Daniel Kim', dp: '/assets/images/dp/avatar-men.png', content: 'Shared this with the whole team!', time: 'Just now' },
-      { name: 'Nina Park', dp: '/assets/images/dp/avatar-3.png', content: 'Great perspective on clean code.', time: 'Just now' },
-    ],
-  };
-
-  // Wire up comment click events for static posts
-  useEffect(() => {
-    const modal = document.querySelector<HTMLElement>('.comment-section');
-    const card = document.querySelector<HTMLElement>('.card');
-    const commentContainer = document.getElementById('commentContainer');
-    if (!modal || !card || !commentContainer) return;
-
-    const buttons = document.querySelectorAll<HTMLElement>('.comment[data-comment-id]');
-    const handlers: { el: HTMLElement; fn: () => void }[] = [];
-
-    buttons.forEach((btn) => {
-      const postId = btn.dataset.commentId || '';
-      const comments = MOCK_COMMENTS[postId] ?? [];
-
-      const fn = () => {
-        localStorage.setItem('postId', postId);
-        modal.style.visibility = 'visible';
-        card.style.opacity = '1';
-        card.style.transform = 'scale(1)';
-
-        commentContainer.innerHTML = '';
-        if (comments.length > 0) {
-          comments.forEach((c) => {
-            const node = document.createElement('div');
-            node.className = 'main-comment';
-            node.innerHTML = `
-              <div class="comment-details">
-                <div class="profile-picture">
-                  <img src="${c.dp}" alt="" style="width:35px;height:35px;border-radius:50%;border:1px solid #fff;object-fit:cover;">
-                </div>
-                <div class="comment-body">
-                  <div><a href=""><h5>${c.name}</h5></a><p class="text-muted" style="font-size:0.7rem;">${c.time}</p></div>
-                  <p>${c.content}</p>
-                  <p class="text-muted">Reply</p>
-                </div>
-              </div>
-              <div class="reaction">
-                <i style="cursor:pointer;" class="fa-regular fa-heart"></i>
-                <p class="text-muted">0</p>
-              </div>`;
-            commentContainer.appendChild(node);
-          });
-        } else {
-          const node = document.createElement('div');
-          node.className = 'main-comment';
-          node.style.display = 'block';
-          node.style.borderBottom = 'none';
-          node.style.marginTop = '1rem';
-          node.innerHTML = `
-            <h2 style="color:var(--light-gray);">Be the first one to comment!</h2>
-            <p style="color:var(--light-gray);font-size:0.6rem;">Keep the comment section respectful and kind to everyone.</p>`;
-          commentContainer.appendChild(node);
+  // Interactions
+  const toggleLike = (postId: number) => {
+    setLikes(prev => {
+      const current = prev[postId] || { count: posts.find(p => p.post_id === postId)?.likes || 0, liked: false };
+      const liked = !current.liked;
+      return {
+        ...prev,
+        [postId]: {
+          count: liked ? current.count + 1 : Math.max(0, current.count - 1),
+          liked
         }
       };
-
-      btn.addEventListener('click', fn);
-      handlers.push({ el: btn, fn });
     });
+  };
 
-    return () => {
-      handlers.forEach(({ el, fn }) => el.removeEventListener('click', fn));
-    };
-  }, []);
+  const toggleBookmark = (postId: number) => {
+    setBookmarks(prev => ({
+      ...prev,
+      [postId]: !prev[postId]
+    }));
+  };
 
-  // ── Dynamic script loader with event-listener tracking and cleanup ──
-  useEffect(() => {
-    const originalWindowAdd = window.addEventListener;
-    const originalDocumentAdd = document.addEventListener;
-
-    const windowListeners: { type: string; listener: any; options?: any }[] = [];
-    const documentListeners: { type: string; listener: any; options?: any }[] = [];
-
-    (window as any).addEventListener = function (type: string, listener: any, options?: any) {
-      const stack = new Error().stack || '';
-      if (stack.includes('profileDom.js') || stack.includes('fetchProfile.js')) {
-        windowListeners.push({ type, listener, options });
-      }
-      return originalWindowAdd.call(window, type, listener, options);
-    };
-
-    (document as any).addEventListener = function (type: string, listener: any, options?: any) {
-      const stack = new Error().stack || '';
-      if (stack.includes('profileDom.js') || stack.includes('fetchProfile.js')) {
-        documentListeners.push({ type, listener, options });
-      }
-      return originalDocumentAdd.call(document, type, listener, options);
-    };
-
-    const scripts = [
-      '/assets/scripts/profiles/profileDom.js',
-      '/assets/scripts/profiles/fetchProfile.js',
-    ];
-
-    const scriptElements: HTMLScriptElement[] = [];
-    const timestamp = Date.now();
-
-    scripts.forEach((src, index) => {
-      const script = document.createElement('script');
-      script.src = `${src}?t=${timestamp}`;
-      // profileDom.js is NOT a module; fetchProfile.js IS a module
-      script.type = index === 1 ? 'module' : 'text/javascript';
-      script.async = true;
-      document.body.appendChild(script);
-      scriptElements.push(script);
-    });
-
-    return () => {
-      // Restore originals
-      window.addEventListener = originalWindowAdd;
-      document.addEventListener = originalDocumentAdd;
-
-      windowListeners.forEach(({ type, listener, options }) =>
-        window.removeEventListener(type, listener, options)
-      );
-      documentListeners.forEach(({ type, listener, options }) =>
-        document.removeEventListener(type, listener, options)
-      );
-
-      scriptElements.forEach((script) => {
-        if (script.parentNode) script.parentNode.removeChild(script);
-      });
-    };
-  }, [navigate]);
+  const isOwnProfile = currentUser && currentUser.userId?.toString() === profileId;
+  const displayName = profileUser ? `${profileUser.first_name} ${profileUser.last_name}` : 'Loading...';
+  const handleName = profileUser ? profileUser.username : '@loading';
+  const displayDp = profileUser ? formatDpUrl(profileUser.dp) : '/assets/gifs/loading.gif';
+  const formattedBirthday = profileUser?.birthday ? new Date(profileUser.birthday).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'July 20, 2004';
+  const formattedGender = profileUser?.gender ? profileUser.gender : 'Female';
 
   return (
     <div className={`profile-page-wrapper bg-[#000000] min-h-screen w-full text-[var(--light-gray)] font-[var(--ff-poppins)] pt-[5rem] relative ${isDayMode ? 'day' : ''}`}>
+      <Header isDayMode={isDayMode} setIsDayMode={setIsDayMode} currentUser={currentUser} />
 
-      {/* ── HEADER ── */}
-      <Header isDayMode={isDayMode} setIsDayMode={setIsDayMode} />
-
-      {/* ── PROFILE MODAL (dropdown) ── */}
-      <div className="profile-modal">
-        <a href="/profile" className="profile" onClick={(e) => { e.preventDefault(); navigate('/profile'); }}>
-          <div className="profile-picture">
-            <img className="user-dp" src="/assets/gifs/loading.gif" alt="" />
-          </div>
-          <div className="handle">
-            <h4 className="user_name">Loading...</h4>
-            <p className="user_username text-muted">Loading...</p>
-          </div>
-        </a>
-        <div>
-          <a
-            href="/settings?entry_point=account_settings"
-            className="menu-item"
-            onClick={(e) => { e.preventDefault(); navigate('/settings?entry_point=account_settings'); }}
-          >
-            <span><i className="fa-solid fa-wrench"></i></span><h3>Account Settings</h3>
-          </a>
-          <div id="logout_btn" className="menu-item">
-            <span><i className="fa-solid fa-right-from-bracket"></i></span><h3>Log Out</h3>
-          </div>
-        </div>
-      </div>
-
-      {/* ── MAIN CONTAINER (Exact width and layout matching screenshot) ── */}
       <main className="mx-auto max-w-[1000px] w-full flex flex-col pt-4 px-4 md:px-0">
-
         {/* ── HERO BANNER SECTION ── */}
         <section className="w-full relative">
-          {/* Hidden file input for cover photo */}
           <input
             ref={coverFileInputRef}
             type="file"
@@ -274,7 +364,6 @@ const ProfilePage: React.FC = () => {
             onPointerUp={handleDragEnd}
             onPointerLeave={handleDragEnd}
           >
-            {/* Cover image */}
             {coverPhoto && (
               <img
                 src={coverPhoto}
@@ -285,7 +374,6 @@ const ProfilePage: React.FC = () => {
               />
             )}
 
-            {/* Dark overlay hint when dragging in editing mode */}
             {coverMode === 'editing' && coverPhoto && (
               <div className="absolute inset-0 bg-black/20 pointer-events-none flex items-center justify-center">
                 <span className="text-white text-xs font-semibold bg-black/50 px-3 py-1.5 rounded-full select-none">
@@ -294,76 +382,75 @@ const ProfilePage: React.FC = () => {
               </div>
             )}
 
-            {/* Bottom-right action buttons */}
-            <div
-              className="absolute bottom-3 right-3 flex items-center gap-2 z-20"
-              onPointerDown={(e) => e.stopPropagation()}
-            >
-              {coverMode === 'idle' || coverMode === 'saved' ? (
-                // Add Cover Photo button
-                <button
-                  onClick={() => coverFileInputRef.current?.click()}
-                  className="flex items-center gap-2 bg-black/60 hover:bg-black/80 backdrop-blur-sm text-white text-xs font-semibold px-4 py-2 rounded-none border border-white/30 hover:border-white/60 transition-all cursor-pointer"
-                >
-                  <i className="fa-solid fa-camera text-[11px]"></i>
-                  {coverMode === 'saved' ? 'Change Cover Photo' : 'Add Cover Photo'}
-                </button>
-              ) : (
-                // Save Changes + Cancel buttons (editing mode)
-                <>
+            {isOwnProfile && (
+              <div
+                className="absolute bottom-3 right-3 flex items-center gap-2 z-20"
+                onPointerDown={(e) => e.stopPropagation()}
+              >
+                {coverMode === 'idle' || coverMode === 'saved' ? (
                   <button
-                    onClick={handleSaveChanges}
-                    className="flex items-center gap-2 bg-[#e89b15] hover:bg-[#d48c10] text-white text-xs font-semibold px-4 py-2 rounded-none border border-[#e89b15] transition-all cursor-pointer"
+                    onClick={() => coverFileInputRef.current?.click()}
+                    className="flex items-center gap-2 bg-black/60 hover:bg-black/80 backdrop-blur-sm text-white text-xs font-semibold px-4 py-2 rounded-none border border-white/30 hover:border-white/60 transition-all cursor-pointer"
                   >
-                    <i className="fa-solid fa-check text-[11px]"></i>
-                    Save Changes
+                    <i className="fa-solid fa-camera text-[11px]"></i>
+                    {coverMode === 'saved' ? 'Change Cover Photo' : 'Add Cover Photo'}
                   </button>
-                  <button
-                    onClick={handleCancel}
-                    className="flex items-center gap-2 bg-black/60 hover:bg-black/80 backdrop-blur-sm text-white text-xs font-semibold px-4 py-2 rounded-none border border-white/40 hover:border-white/70 transition-all cursor-pointer"
-                  >
-                    <i className="fa-solid fa-xmark text-[11px]"></i>
-                    Cancel
-                  </button>
-                </>
-              )}
-            </div>
-
+                ) : (
+                  <>
+                    <button
+                      onClick={() => setCoverMode('saved')}
+                      className="flex items-center gap-2 bg-[#e89b15] hover:bg-[#d48c10] text-white text-xs font-semibold px-4 py-2 rounded-none border border-[#e89b15] transition-all cursor-pointer"
+                    >
+                      <i className="fa-solid fa-check text-[11px]"></i>
+                      Save Changes
+                    </button>
+                    <button
+                      onClick={() => {
+                        setCoverPhoto(null);
+                        setCoverMode('idle');
+                      }}
+                      className="flex items-center gap-2 bg-black/60 hover:bg-black/80 backdrop-blur-sm text-white text-xs font-semibold px-4 py-2 rounded-none border border-white/40 hover:border-white/70 transition-all cursor-pointer"
+                    >
+                      <i className="fa-solid fa-xmark text-[11px]"></i>
+                      Cancel
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Overlapping Profile Info Container */}
           <div className="relative flex items-end pl-6 md:pl-10 -mt-[-20px] z-10 w-full gap-5">
-            {/* Avatar Circle with Thick White Border */}
             <div className="w-[150px] h-[150px] rounded-full border-[5px] border-white bg-[#000000] overflow-hidden flex items-center justify-center shrink-0 shadow-lg">
               <img
                 className="profile-dp w-full h-full object-cover"
-                src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>"
+                src={displayDp}
                 alt="Profile Avatar"
               />
             </div>
 
-            {/* Name, Handle, Bio and Buttons placed to the right of avatar, overlapping the banner */}
             <div className="flex flex-col flex-1 pb-2">
-              <h1 className="profile_name text-[22px] font-bold text-white tracking-wide leading-tight">Juan Teodoro</h1>
-              <p className="profile_username text-[#888888] font-normal text-sm mt-0.5">@denielle</p>
+              <h1 className="profile_name text-[22px] font-bold text-white tracking-wide leading-tight">{displayName}</h1>
+              <p className="profile_username text-[#888888] font-normal text-sm mt-0.5">{handleName}</p>
+              <p className="text-sm text-white font-normal mt-2">{profileUser?.bio || "Bio here"}</p>
 
-              <p className="text-sm text-white font-normal mt-2">Bio here</p>
-
-              {/* Square Action Buttons aligned directly below the bio */}
-              <div className="top-buttons flex items-center gap-3 mt-3.5">
-                <button
-                  id="addFriend"
-                  className="bg-[#e89b15] hover:bg-[#d48c10] text-white font-semibold px-8 py-3 rounded-none text-[13px] tracking-wide transition-all border border-[#e89b15] cursor-pointer"
-                >
-                  Friends
-                </button>
-                <button
-                  id="sendMessage"
-                  className="bg-transparent border border-white hover:bg-white/10 text-white font-semibold px-8 py-3 rounded-none text-[13px] tracking-wide transition-all cursor-pointer"
-                >
-                  Message
-                </button>
-              </div>
+              {!isOwnProfile && (
+                <div className="top-buttons flex items-center gap-3 mt-3.5" style={{ display: 'flex' }}>
+                  <button
+                    id="addFriend"
+                    className="bg-[#e89b15] hover:bg-[#d48c10] text-white font-semibold px-8 py-3 rounded-none text-[13px] tracking-wide transition-all border border-[#e89b15] cursor-pointer"
+                  >
+                    {isFriend ? 'Friends' : 'Add Friend'}
+                  </button>
+                  <button
+                    id="sendMessage"
+                    className="bg-transparent border border-white hover:bg-white/10 text-white font-semibold px-8 py-3 rounded-none text-[13px] tracking-wide transition-all cursor-pointer"
+                  >
+                    Message
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </section>
@@ -377,7 +464,8 @@ const ProfilePage: React.FC = () => {
                   <li>
                     <button
                       id="postBtn"
-                      className="nav-link active text-[#e89b15] font-semibold text-xs transition-all cursor-pointer bg-transparent border-none p-0 outline-none"
+                      className={`nav-link text-xs transition-all cursor-pointer bg-transparent border-none p-0 outline-none font-semibold ${activeTab === 'posts' ? 'text-[#e89b15] active' : 'text-[#888888]'}`}
+                      onClick={() => setActiveTab('posts')}
                     >
                       Post
                     </button>
@@ -385,6 +473,7 @@ const ProfilePage: React.FC = () => {
                   <li>
                     <button
                       className="nav-link text-[#888888] hover:text-white font-semibold text-xs transition-all cursor-pointer bg-transparent border-none p-0 outline-none"
+                      onClick={(e) => e.preventDefault()}
                     >
                       Friends
                     </button>
@@ -410,25 +499,14 @@ const ProfilePage: React.FC = () => {
                 </ul>
               </div>
             </div>
-
-            {/* Hidden aboutBtn for legacy event-listener compatibility */}
-            <button id="aboutBtn" className="hidden"></button>
           </header>
 
           {/* ── TWO-COLUMN GRID CONTENT ── */}
           <section className="nav-cont py-6 grid grid-cols-1 md:grid-cols-10 gap-6 items-start w-full">
-
-            {/* LEFT COLUMN (Width ~ 35% on desktop: About & Featured) */}
-            <div
-              id="about"
-              className="flex flex-col gap-6 md:col-span-4 bg-transparent p-0 border-none shadow-none"
-            >
-              {/* About Section */}
+            {/* LEFT COLUMN: About & Featured Info */}
+            <div id="about" className="flex flex-col gap-6 md:col-span-4 bg-transparent p-0 border-none shadow-none">
               <div className="w-full">
-                <h3 className="text-[25px] font-bold text-white mb-4">
-                  About
-                </h3>
-
+                <h3 className="text-[25px] font-bold text-white mb-4">About</h3>
                 <div className="flex flex-col gap-3">
                   <div className="flex items-center gap-3 text-xs">
                     <i className="fa-solid fa-house text-white text-sm w-4 text-center shrink-0"></i>
@@ -438,34 +516,19 @@ const ProfilePage: React.FC = () => {
                     <i className="fa-solid fa-location-dot text-white text-sm w-4 text-center shrink-0"></i>
                     <span className="text-[#a0a0a0]">Kinamaligan, Masbate, Phililppines</span>
                   </div>
-
-                  {/* Keep gender/birthday for legacy data population, hidden to match screenshot */}
-                  <div className="hidden">
-                    <span id="birthday">July 20, 2004</span>
-                    <span id="gender">Female</span>
+                  <div className="flex items-center gap-3 text-xs">
+                    <i className="fa-solid fa-cake-candles text-white text-sm w-4 text-center shrink-0"></i>
+                    <span className="text-[#a0a0a0]">Born on: {formattedBirthday}</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-xs">
+                    <i className="fa-solid fa-venus-mars text-white text-sm w-4 text-center shrink-0"></i>
+                    <span className="text-[#a0a0a0]">Gender: {formattedGender}</span>
                   </div>
                 </div>
               </div>
 
-              {/* Featured Section */}
               <div className="w-full mt-2">
-                <h3 className="text-[25px] font-bold text-white mb-4">
-                  Featured
-                </h3>
-
-                <div className="grid grid-cols-3 gap-2">
-                  <div className="aspect-square bg-[#1c1c1e] rounded-[4px] border-none transition-all cursor-pointer"></div>
-                  <div className="aspect-square bg-[#1c1c1e] rounded-[4px] border-none transition-all cursor-pointer"></div>
-                  <div className="aspect-square bg-[#1c1c1e] rounded-[4px] border-none transition-all cursor-pointer"></div>
-                </div>
-              </div>
-
-              {/* Badges */}
-              <div className="w-full mt-2">
-                <h3 className="text-[25px] font-bold text-white mb-4">
-                  Badges
-                </h3>
-
+                <h3 className="text-[25px] font-bold text-white mb-4">Featured</h3>
                 <div className="grid grid-cols-3 gap-2">
                   <div className="aspect-square bg-[#1c1c1e] rounded-[4px] border-none transition-all cursor-pointer"></div>
                   <div className="aspect-square bg-[#1c1c1e] rounded-[4px] border-none transition-all cursor-pointer"></div>
@@ -474,305 +537,108 @@ const ProfilePage: React.FC = () => {
               </div>
             </div>
 
-            {/* RIGHT COLUMN (Width ~ 65% on desktop: Posts) */}
-            <div
-              id="post"
-              className="flex flex-col gap-0 md:col-span-6 w-full"
-            >
-              {/* Post 1 */}
-              <div className="posts">
-                <div className="feed-header">
-                  <div className="dp-container">
-                    <div className="profile-picture">
-                      <img className="myProfilePic user-dp" src="/assets/images/dp/avatar-3.png" alt="" loading="lazy" />
-                    </div>
-                  </div>
-                  <div className="poster-container-info">
-                    <div className="feed-header-container">
-                      <div className="poster-infos">
-                        <div className="name">
-                          <a href="#" className="profile-link">
-                            <h4 className="profile_name">Juan Teodoro</h4>
-                          </a>
-                          <p className="text-muted">&bull;</p>
-                          <p className="text-muted">2 hours ago</p>
-                        </div>
-                        <div className="time">
-                          <p className="text-muted profile_username">@denielle</p>
-                        </div>
-                      </div>
-                      <p>
-                        <span className="edit" data-edit-id="101">
-                          <span className="options"></span>
-                        </span>
-                      </p>
-                    </div>
-                    <div className="photo">
-                      <div style={{ padding: 0 }}>
-                        <p>Serene escapes 🌲🏔️</p>
-                        <h1>Spending the weekend in the mountains, disconnected from the noise. The fresh alpine air is exactly what I needed!</h1>
-                      </div>
-                      <div className="facebook-post">
-                        <div className="see-more">
-                          <i className="fa-regular fa-eye"></i>
-                          <p>See more</p>
-                        </div>
-                        <div className="image-grid single-image">
-                          <img className="photo-post" src="/assets/testImages/2785e4160c717d329d7770799f68ff3a.jpg" loading="lazy" alt="" />
-                        </div>
-                      </div>
-                      <div className="reactions">
-                        <div>
-                          <i data-like-id="101" className="like fa-regular fa-heart"></i>
-                          <h1>124</h1>
-                        </div>
-                        <div>
-                          <i data-comment-id="101" className="comment fa-regular fa-comment-dots"></i>
-                          <h1>1</h1>
-                        </div>
-                        <div>
-                          <i data-bookmark-id="101" className="bookmark fa-regular fa-bookmark"></i>
-                          <h1>0</h1>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            {/* RIGHT COLUMN: Posts Feed */}
+            {activeTab === 'posts' && (
+              <div id="post" className="flex flex-col gap-0 md:col-span-6 w-full">
+                {posts.map((post) => {
+                  const hasLiked = likes[post.post_id]?.liked ?? false;
+                  const likesCount = likes[post.post_id]?.count ?? post.likes;
+                  const hasBookmarked = bookmarks[post.post_id] ?? false;
 
-              {/* Post 2 */}
-              <div className="posts">
-                <div className="feed-header">
-                  <div className="dp-container">
-                    <div className="profile-picture">
-                      <img className="myProfilePic user-dp" src="/assets/images/dp/avatar-men.png" alt="" loading="lazy" />
-                    </div>
-                  </div>
-                  <div className="poster-container-info">
-                    <div className="feed-header-container">
-                      <div className="poster-infos">
-                        <div className="name">
-                          <a href="#" className="profile-link">
-                            <h4 className="profile_name">Juan Teodoro</h4>
-                          </a>
-                          <p className="text-muted">&bull;</p>
-                          <p className="text-muted">5 hours ago</p>
+                  return (
+                    <div key={post.post_id} className="posts">
+                      <div className="feed-header">
+                        <div className="dp-container">
+                          <div className="profile-picture">
+                            <img className="myProfilePic user-dp" src={displayDp} alt="" loading="lazy" />
+                          </div>
                         </div>
-                        <div className="time">
-                          <p className="text-muted profile_username">@denielle</p>
-                        </div>
-                      </div>
-                      <p>
-                        <span className="edit" data-edit-id="102">
-                          <span className="options"></span>
-                        </span>
-                      </p>
-                    </div>
-                    <div className="photo">
-                      <div style={{ padding: 0 }}>
-                        <p>Cozy Coding Setup 💻☕</p>
-                        <h1>Updated my workspace with some new mechanical keycaps and ambient desk lighting. Productivity has officially doubled!</h1>
-                      </div>
-                      <div className="facebook-post">
-                        <div className="see-more">
-                          <i className="fa-regular fa-eye"></i>
-                          <p>See more</p>
-                        </div>
-                        <div className="image-grid single-image">
-                          <img className="photo-post" src="/assets/testImages/IMG_20240515_004422.jpg" loading="lazy" alt="" />
-                        </div>
-                      </div>
-                      <div className="reactions">
-                        <div>
-                          <i data-like-id="102" className="like fa-regular fa-heart"></i>
-                          <h1>85</h1>
-                        </div>
-                        <div>
-                          <i data-comment-id="102" className="comment fa-regular fa-comment-dots"></i>
-                          <h1>0</h1>
-                        </div>
-                        <div>
-                          <i data-bookmark-id="102" className="bookmark fa-regular fa-bookmark"></i>
-                          <h1>0</h1>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                        <div className="poster-container-info">
+                          <div className="feed-header-container">
+                            <div className="poster-infos">
+                              <div className="name">
+                                <a href="#" onClick={(e) => e.preventDefault()} className="profile-link">
+                                  <h4 className="profile_name">{displayName}</h4>
+                                </a>
+                                <p className="text-muted">&bull;</p>
+                                <p className="text-muted">{timeConversion(post.postAt)}</p>
+                              </div>
+                              <div className="time">
+                                <p className="text-muted profile_username">{handleName}</p>
+                              </div>
+                            </div>
+                            <p>
+                              <span className="edit">
+                                <span className="options"></span>
+                              </span>
+                            </p>
+                          </div>
+                          <div className="photo">
+                            <div style={{ padding: 0 }}>
+                              <p>{post.caption}</p>
+                              <h1>{post.content}</h1>
+                            </div>
 
-              {/* Post 3 */}
-              <div className="posts">
-                <div className="feed-header">
-                  <div className="dp-container">
-                    <div className="profile-picture">
-                      <img className="myProfilePic user-dp" src="/assets/images/dp/avatar-3.png" alt="" loading="lazy" />
-                    </div>
-                  </div>
-                  <div className="poster-container-info">
-                    <div className="feed-header-container">
-                      <div className="poster-infos">
-                        <div className="name">
-                          <a href="#" className="profile-link">
-                            <h4 className="profile_name">Juan Teodoro</h4>
-                          </a>
-                          <p className="text-muted">&bull;</p>
-                          <p className="text-muted">1 day ago</p>
-                        </div>
-                        <div className="time">
-                          <p className="text-muted profile_username">@denielle</p>
-                        </div>
-                      </div>
-                      <p>
-                        <span className="edit" data-edit-id="103">
-                          <span className="options"></span>
-                        </span>
-                      </p>
-                    </div>
-                    <div className="photo">
-                      <div style={{ padding: 0 }}>
-                        <p>UI Design Updates! 🚀</p>
-                        <h1>Just finished designing the new user profile dashboard! The clean aesthetics and unified color palette feel so premium. What do you all think?</h1>
-                      </div>
-                      <div className="reactions">
-                        <div>
-                          <i data-like-id="103" className="like fa-regular fa-heart"></i>
-                          <h1>42</h1>
-                        </div>
-                        <div>
-                          <i data-comment-id="103" className="comment fa-regular fa-comment-dots"></i>
-                          <h1>3</h1>
-                        </div>
-                        <div>
-                          <i data-bookmark-id="103" className="bookmark fa-regular fa-bookmark"></i>
-                          <h1>0</h1>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                            {post.image && (
+                              <div className="facebook-post">
+                                <div className="see-more">
+                                  <i className="fa-regular fa-eye"></i>
+                                  <p>See more</p>
+                                </div>
+                                <div className="image-grid single-image">
+                                  <img className="photo-post" src={post.image} loading="lazy" alt="" />
+                                </div>
+                              </div>
+                            )}
 
-              {/* Post 4 */}
-              <div className="posts">
-                <div className="feed-header">
-                  <div className="dp-container">
-                    <div className="profile-picture">
-                      <img className="myProfilePic user-dp" src="/assets/images/dp/avatar-men.png" alt="" loading="lazy" />
-                    </div>
-                  </div>
-                  <div className="poster-container-info">
-                    <div className="feed-header-container">
-                      <div className="poster-infos">
-                        <div className="name">
-                          <a href="#" className="profile-link">
-                            <h4 className="profile_name">Juan Teodoro</h4>
-                          </a>
-                          <p className="text-muted">&bull;</p>
-                          <p className="text-muted">2 days ago</p>
-                        </div>
-                        <div className="time">
-                          <p className="text-muted profile_username">@denielle</p>
-                        </div>
-                      </div>
-                      <p>
-                        <span className="edit" data-edit-id="104">
-                          <span className="options"></span>
-                        </span>
-                      </p>
-                    </div>
-                    <div className="photo">
-                      <div style={{ padding: 0 }}>
-                        <p>Nature walk photography 🌸✨</p>
-                        <h1>A beautiful morning walk capture! Nature never fails to amaze.</h1>
-                      </div>
-                      <div className="facebook-post">
-                        <div className="see-more">
-                          <i className="fa-regular fa-eye"></i>
-                          <p>See more</p>
-                        </div>
-                        <div className="image-grid single-image">
-                          <img className="photo-post" src="/assets/testImages/2785e4160c717d329d7770799f68ff3a.jpg" loading="lazy" alt="" />
-                        </div>
-                      </div>
-                      <div className="reactions">
-                        <div>
-                          <i data-like-id="104" className="like fa-regular fa-heart"></i>
-                          <h1>95</h1>
-                        </div>
-                        <div>
-                          <i data-comment-id="104" className="comment fa-regular fa-comment-dots"></i>
-                          <h1>2</h1>
-                        </div>
-                        <div>
-                          <i data-bookmark-id="104" className="bookmark fa-regular fa-bookmark"></i>
-                          <h1>0</h1>
+                            <div className="reactions">
+                              <div onClick={() => toggleLike(post.post_id)}>
+                                <i
+                                  className={`like cursor-pointer ${hasLiked ? 'fa-solid fa-heart' : 'fa-regular fa-heart'}`}
+                                  style={{ color: hasLiked ? 'crimson' : '' }}
+                                ></i>
+                                <h1>{likesCount}</h1>
+                              </div>
+                              <div
+                                onClick={() => {
+                                  setActiveCommentPostId(post.post_id);
+                                  setCommentModalOpen(true);
+                                }}
+                              >
+                                <i className="comment fa-regular fa-comment-dots cursor-pointer"></i>
+                                <h1>{post.commentsCount ?? 0}</h1>
+                              </div>
+                              <div onClick={() => toggleBookmark(post.post_id)}>
+                                <i
+                                  className={`bookmark cursor-pointer ${hasBookmarked ? 'fa-solid fa-bookmark' : 'fa-regular fa-bookmark'}`}
+                                  style={{ color: hasBookmarked ? 'gold' : '' }}
+                                ></i>
+                                <h1>0</h1>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </div>
+                  );
+                })}
               </div>
-
-              {/* Post 5 */}
-              <div className="posts">
-                <div className="feed-header">
-                  <div className="dp-container">
-                    <div className="profile-picture">
-                      <img className="myProfilePic user-dp" src="/assets/images/dp/avatar-3.png" alt="" loading="lazy" />
-                    </div>
-                  </div>
-                  <div className="poster-container-info">
-                    <div className="feed-header-container">
-                      <div className="poster-infos">
-                        <div className="name">
-                          <a href="#" className="profile-link">
-                            <h4 className="profile_name">Juan Teodoro</h4>
-                          </a>
-                          <p className="text-muted">&bull;</p>
-                          <p className="text-muted">3 days ago</p>
-                        </div>
-                        <div className="time">
-                          <p className="text-muted profile_username">@denielle</p>
-                        </div>
-                      </div>
-                      <p>
-                        <span className="edit" data-edit-id="105">
-                          <span className="options"></span>
-                        </span>
-                      </p>
-                    </div>
-                    <div className="photo">
-                      <div style={{ padding: 0 }}>
-                        <p>Engineering Thoughts ⚡</p>
-                        <h1>Scaling frontend applications requires a solid balance of clean component architecture and reusable styled-systems. Tailwind CSS v4 is a game changer!</h1>
-                      </div>
-                      <div className="reactions">
-                        <div>
-                          <i data-like-id="105" className="like fa-regular fa-heart"></i>
-                          <h1>156</h1>
-                        </div>
-                        <div>
-                          <i data-comment-id="105" className="comment fa-regular fa-comment-dots"></i>
-                          <h1>8</h1>
-                        </div>
-                        <div>
-                          <i data-bookmark-id="105" className="bookmark fa-regular fa-bookmark"></i>
-                          <h1>0</h1>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
+            )}
           </section>
         </section>
       </main>
 
       {/* ── COMMENT SECTION MODAL ── */}
-      <CommentModal isDayMode={isDayMode} />
+      <CommentModal
+        isDayMode={isDayMode}
+        isOpen={commentModalOpen}
+        postId={activeCommentPostId}
+        userId={currentUser?.userId}
+        onClose={() => {
+          setCommentModalOpen(false);
+          setActiveCommentPostId(null);
+        }}
+      />
     </div>
   );
 };

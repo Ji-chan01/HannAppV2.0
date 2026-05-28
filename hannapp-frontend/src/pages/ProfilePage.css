@@ -179,36 +179,7 @@
   }
 
   /* ── HEADER STYLES ── */
-  .header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 2rem;
-    z-index: 100;
-    background: #000000 !important;
-    border-bottom: 1px solid #1c1c1e;
-  }
-
-  .header .left-section {
-    display: flex;
-    align-items: center;
-  }
-
-  .header .left-section h1 {
-    color: var(--orange-yellow-crayola);
-    position: relative;
-    overflow: hidden;
-    background: transparent;
-    margin: 0;
-  }
-
-  .header a {
-    color: #fff;
-  }
+  /* Global header styles are defined in index.css — no overrides needed here */
 
   .aurora {
     position: absolute;
@@ -278,19 +249,21 @@
 
   .header .left-section .search-bar .searched-items-cont {
     position: absolute;
-    left: 11.3rem;
-    top: 4rem;
-    width: 22rem;
+    left: 0;
+    top: calc(100% + 8px);
+    width: 100%;
+    min-width: 22rem;
     padding: 0.3rem;
     background: var(--smoky-black);
-    border-radius: 5px;
+    border-radius: 8px;
     display: none;
     flex-direction: column;
     gap: 0.1rem;
     max-height: 20rem;
-    overflow: hidden;
     overflow-y: auto;
     z-index: 102;
+    border: 1px solid hsl(0, 0%, 29%);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
   }
 
   .header .left-section .search-bar .searched-items-cont.active {
@@ -381,22 +354,24 @@
     background: var(--eerie-black);
     box-shadow: 0 0 0.1rem var(--jet);
     border-radius: 2rem;
-    overflow: hidden;
+    /* overflow: hidden removed — it clips the dropdown modal */
+    position: relative;
     padding: 0.2rem 0.4rem;
     padding-right: 0.7rem;
     color: #fff;
     font-size: 0.7rem;
     cursor: pointer;
     transition: all 100ms ease;
+    user-select: none;
   }
 
   .profile-dropdown i {
     color: var(--light-gray);
-    margin-bottom: 0.3rem;
+    margin-top: 2px;
   }
 
   .profile-dropdown:hover {
-    background: var(--eerie-black);
+    background: hsl(240, 2%, 15%);
     box-shadow: 0 0 0.3rem var(--jet);
   }
 
