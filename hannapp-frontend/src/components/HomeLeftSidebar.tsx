@@ -61,11 +61,18 @@ const HomeLeftSidebar: React.FC<HomeLeftSidebarProps> = ({ activeGame, currentUs
 
       {/* ── Navigation Links ───────────────────────────── */}
       <nav className="flex flex-col w-full overflow-hidden border-t border-b border-[var(--jet)] py-4">
-        {NAV_LINKS.map(({ icon, label }) => (
+      {NAV_LINKS.map(({ icon, label }) => (
           <a
             key={label}
             href="#"
-            onClick={(e) => e.preventDefault()}
+            onClick={(e) => {
+              e.preventDefault();
+              if (label === 'Friend Requests') {
+                navigate('/friend-requests');
+              } else if (label === 'Reels') {
+                navigate('/reels');
+              }
+            }}
             className="flex items-center gap-3 px-4 py-3 text-[var(--light-gray)] hover:bg-[var(--jet)] hover:text-white transition-colors duration-150 group"
           >
             <div className="w-9 h-9 rounded-full bg-[var(--smoky-black)] flex items-center justify-center flex-shrink-0 group-hover:bg-[var(--gradient-yellow)]/15 transition-colors">

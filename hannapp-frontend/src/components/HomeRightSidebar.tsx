@@ -70,7 +70,7 @@ const HomeRightSidebar: React.FC<HomeRightSidebarProps> = ({ friends: initialFri
     <aside className="right-sidebar flex-1 flex flex-col gap-6">
       {/* ── Following ──────────────────────────────────── */}
       <div className="following-container sticky top-[-2rem] flex flex-col gap-2">
-        <h4 className="text-white font-bold px-2 text-2xl">Following</h4>
+        <h4 className="text-white font-bold px-2 text-xl">Online Friends</h4>
         <div className="line-separator w-[100%] align-self-center h-[1px] bg-[var(--jet)] mx-auto" />
         <div
           id="followingProfiles"

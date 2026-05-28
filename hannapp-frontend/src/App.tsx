@@ -9,6 +9,8 @@ import SettingsPage from './pages/SettingsPage'
 import TermsPage from './pages/TermsPage'
 import ImageGridTestPage from './pages/ImageGridTestPage'
 import TetrisPage from './pages/Tetris'
+import FriendRequestsPage from './pages/FriendRequestsPage'
+import ReelsPage from './pages/ReelsPage'
 
 const LegacyRedirect: React.FC<{ to: string }> = ({ to }) => {
   const location = useLocation();
@@ -40,6 +42,10 @@ function App() {
 
         {/* Dev / Test */}
         <Route path="/image-grid-test" element={<ImageGridTestPage />} />
+
+        {/* Social */}
+        <Route path="/friend-requests" element={<FriendRequestsPage />} />
+        <Route path="/reels"           element={<ReelsPage />} />
 
         {/* Games */}
         <Route path="/games/tetris"    element={<TetrisPage />} />

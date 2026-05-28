@@ -1022,3 +1022,159 @@
     }
   }
 }
+
+/* ============================================================
+   PROFILE PAGE — RESPONSIVE LAYOUT
+   Breakpoints:
+     Tablet  : 640px – 1023px  → narrower max-width, single-column grid
+     Mobile  : < 640px         → full-bleed, stacked layout
+   ============================================================ */
+
+/* ── Tablet ── */
+@media (max-width: 1023px) and (min-width: 640px) {
+  .profile-page-wrapper {
+    padding-top: 4rem;
+  }
+
+  .profile-page-wrapper main {
+    max-width: 100% !important;
+    padding: 0 1rem !important;
+  }
+
+  /* Cover photo: shorter on tablet */
+  .profile-page-wrapper .w-full.h-\[230px\] {
+    height: 180px !important;
+  }
+
+  /* Two-column grid: collapse to single column */
+  .profile-page-wrapper .nav-cont {
+    grid-template-columns: 1fr !important;
+  }
+
+  .profile-page-wrapper .nav-cont #about {
+    grid-column: auto !important;
+  }
+
+  .profile-page-wrapper .nav-cont #post {
+    grid-column: auto !important;
+  }
+
+  /* Friends / Message buttons: smaller */
+  .profile-page-wrapper .top-buttons button {
+    padding: 0.6rem 1.5rem !important;
+    font-size: 0.75rem !important;
+  }
+}
+
+/* ── Mobile ── */
+@media (max-width: 639px) {
+  .profile-page-wrapper {
+    padding-top: 3.5rem;
+    padding-bottom: 5rem; /* space for mobile bottom nav if shown */
+  }
+
+  .profile-page-wrapper main {
+    max-width: 100% !important;
+    padding: 0 !important;
+    width: 100% !important;
+  }
+
+  /* Cover photo: shorter strip */
+  .profile-page-wrapper section.w-full.relative > div.w-full {
+    height: 150px !important;
+  }
+
+  /* Profile avatar overlap row */
+  .profile-page-wrapper .relative.flex.items-end {
+    padding-left: 0.75rem !important;
+    gap: 0.75rem !important;
+  }
+
+  /* Profile avatar: smaller on mobile */
+  .profile-page-wrapper .w-\[150px\].h-\[150px\] {
+    width: 90px !important;
+    height: 90px !important;
+    border-width: 3px !important;
+    margin-top: -30px;
+  }
+
+  /* Name & bio text */
+  .profile-page-wrapper .profile_name {
+    font-size: 1.1rem !important;
+  }
+
+  .profile-page-wrapper .profile_username {
+    font-size: 0.72rem !important;
+  }
+
+  /* Add Friend / Message buttons: full row */
+  .profile-page-wrapper .top-buttons {
+    flex-direction: row !important;
+    gap: 0.5rem !important;
+    margin-top: 0.75rem !important;
+  }
+
+  .profile-page-wrapper .top-buttons button {
+    flex: 1;
+    padding: 0.55rem 0.5rem !important;
+    font-size: 0.72rem !important;
+    text-align: center;
+  }
+
+  /* Navigation tab bar: horizontal scroll on mobile */
+  .profile-page-wrapper .bot-sec {
+    padding: 0.6rem 1rem !important;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none;
+  }
+
+  .profile-page-wrapper .bot-sec::-webkit-scrollbar {
+    display: none;
+  }
+
+  .profile-page-wrapper .control-bot-style {
+    flex-direction: row !important;
+    gap: 1.5rem;
+  }
+
+  .profile-page-wrapper .left-nav,
+  .profile-page-wrapper .right-nav {
+    gap: 1.5rem !important;
+    flex-direction: row !important;
+  }
+
+  /* Two-column grid → single column on mobile */
+  .profile-page-wrapper .nav-cont {
+    grid-template-columns: 1fr !important;
+    padding: 1rem 0.75rem !important;
+    gap: 1.5rem !important;
+  }
+
+  .profile-page-wrapper .nav-cont #about,
+  .profile-page-wrapper .nav-cont #post {
+    grid-column: auto !important;
+  }
+
+  /* About section heading */
+  .profile-page-wrapper #about h3 {
+    font-size: 1.1rem !important;
+  }
+
+  /* Featured grid: 2 columns on mobile */
+  .profile-page-wrapper #about .grid-cols-3 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Post cards: flush edges */
+  .profile-page-wrapper .posts {
+    border-left: none !important;
+    border-right: none !important;
+  }
+
+  /* Cover photo buttons: smaller text */
+  .profile-page-wrapper .absolute.bottom-3.right-3 button {
+    font-size: 0.65rem !important;
+    padding: 0.4rem 0.75rem !important;
+  }
+}

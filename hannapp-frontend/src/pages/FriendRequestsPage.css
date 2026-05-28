@@ -1,0 +1,439 @@
+/* ============================================================
+   FRIEND REQUESTS PAGE — FriendRequestsPage.css
+   ============================================================ */
+
+/* ── Page wrapper ───────────────────────────────────────── */
+.fr-page-wrapper {
+  background: hsl(0, 0%, 7%);
+  min-height: 100vh;
+  width: 100%;
+  padding-top: 3rem;
+  color: var(--light-gray, hsl(0, 0%, 84%));
+  font-family: 'Poppins', sans-serif;
+  transition: background 200ms ease, color 200ms ease;
+}
+
+.fr-page-wrapper.day {
+  background: #f0f2f5;
+  color: #1a1a1a;
+}
+
+/* ── Main layout (mirrors HomePage) ─────────────────────── */
+.fr-main {
+  display: flex;
+  padding: 3rem 1.5rem;
+  width: 100%;
+  max-width: 100%;
+  gap: 1.5rem;
+}
+
+/* ── Centre column ──────────────────────────────────────── */
+.fr-content {
+  flex: 3;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* ── Page header ────────────────────────────────────────── */
+.fr-page-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid hsl(0, 0%, 15%);
+}
+
+.fr-page-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.fr-page-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #fff;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.fr-count-badge {
+  background: linear-gradient(135deg, #00c2ff, #e54cff);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  min-width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.45rem;
+  animation: badgePop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.fr-page-subtitle {
+  font-size: 0.82rem;
+  color: hsl(0, 0%, 52%);
+  margin: 0;
+}
+
+/* ── Card list ──────────────────────────────────────────── */
+.fr-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* ── Individual request card ────────────────────────────── */
+.fr-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: hsl(240, 2%, 12%);
+  border: 1px solid hsl(0, 0%, 16%);
+  border-radius: 14px;
+  padding: 1rem 1.25rem;
+  transition: background 140ms ease, border-color 140ms ease, transform 160ms ease, opacity 250ms ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.fr-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(0, 194, 255, 0.04), rgba(229, 76, 255, 0.04));
+  opacity: 0;
+  transition: opacity 200ms ease;
+  pointer-events: none;
+}
+
+.fr-card:hover::before {
+  opacity: 1;
+}
+
+.fr-card:hover {
+  border-color: hsl(0, 0%, 22%);
+  transform: translateY(-1px);
+}
+
+.fr-card.fr-accepted {
+  border-color: rgba(49, 162, 76, 0.35);
+  background: hsl(130, 15%, 10%);
+}
+
+.fr-card.fr-declined {
+  opacity: 0.6;
+  border-color: hsl(0, 0%, 14%);
+}
+
+/* ── Avatar ─────────────────────────────────────────────── */
+.fr-avatar-wrap {
+  position: relative;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.fr-avatar {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid hsl(0, 0%, 25%);
+  transition: border-color 150ms ease, transform 150ms ease;
+}
+
+.fr-avatar-wrap:hover .fr-avatar {
+  border-color: #00c2ff;
+  transform: scale(1.05);
+}
+
+.fr-avatar-online {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 0.8rem;
+  height: 0.8rem;
+  background: #31a24c;
+  border-radius: 50%;
+  border: 2px solid hsl(240, 2%, 12%);
+}
+
+/* ── Info block ─────────────────────────────────────────── */
+.fr-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+/* Clickable name */
+.fr-name {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: left;
+  line-height: 1.2;
+  transition: color 130ms ease;
+  font-family: 'Poppins', sans-serif;
+}
+
+.fr-name:hover {
+  color: #00c2ff;
+  text-decoration: underline;
+}
+
+.fr-username {
+  color: hsl(0, 0%, 50%);
+  font-size: 0.76rem;
+}
+
+.fr-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  margin-top: 0.25rem;
+}
+
+.fr-mutual,
+.fr-time {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.72rem;
+  color: hsl(0, 0%, 55%);
+}
+
+.fr-mutual i {
+  color: #00c2ff;
+}
+
+.fr-time i {
+  color: hsl(0, 0%, 50%);
+}
+
+/* ── Action buttons ─────────────────────────────────────── */
+.fr-actions {
+  display: flex;
+  gap: 0.6rem;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+.fr-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1.1rem;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  border: none;
+  transition: opacity 130ms ease, transform 100ms ease, box-shadow 130ms ease;
+  white-space: nowrap;
+}
+
+.fr-btn:hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+
+.fr-btn:active {
+  transform: translateY(0);
+}
+
+.fr-btn-accept {
+  background: linear-gradient(135deg, #00c2ff, #e54cff);
+  color: #fff;
+  box-shadow: 0 2px 14px rgba(0, 194, 255, 0.25);
+}
+
+.fr-btn-decline {
+  background: hsl(240, 2%, 20%);
+  color: hsl(0, 0%, 78%);
+  border: 1px solid hsl(0, 0%, 24%);
+}
+
+.fr-btn-decline:hover {
+  background: hsl(240, 2%, 26%);
+}
+
+/* ── Status row (after action taken) ───────────────────── */
+.fr-status-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.fr-status-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.35rem 0.8rem;
+  border-radius: 20px;
+}
+
+.fr-status-tag.accepted {
+  background: rgba(49, 162, 76, 0.18);
+  color: #4cde82;
+  border: 1px solid rgba(49, 162, 76, 0.3);
+}
+
+.fr-status-tag.declined {
+  background: rgba(200, 40, 40, 0.12);
+  color: #f07070;
+  border: 1px solid rgba(200, 40, 40, 0.25);
+}
+
+.fr-undo-btn {
+  background: none;
+  border: 1px solid hsl(0, 0%, 28%);
+  border-radius: 6px;
+  color: hsl(0, 0%, 70%);
+  font-size: 0.73rem;
+  font-weight: 600;
+  padding: 0.3rem 0.65rem;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+  font-family: 'Poppins', sans-serif;
+}
+
+.fr-undo-btn:hover {
+  background: hsl(0, 0%, 20%);
+  color: #fff;
+}
+
+/* ── Empty state ────────────────────────────────────────── */
+.fr-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  gap: 0.75rem;
+  text-align: center;
+}
+
+.fr-empty-icon {
+  font-size: 3rem;
+  background: linear-gradient(135deg, #00c2ff, #e54cff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 0.5rem;
+}
+
+.fr-empty h3 {
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.fr-empty p {
+  color: hsl(0, 0%, 50%);
+  font-size: 0.82rem;
+  margin: 0;
+}
+
+/* ── Skeleton loaders ───────────────────────────────────── */
+.fr-skeleton {
+  pointer-events: none;
+}
+
+.fr-skeleton-avatar {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  background: linear-gradient(90deg, hsl(0, 0%, 14%) 25%, hsl(0, 0%, 20%) 50%, hsl(0, 0%, 14%) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  flex-shrink: 0;
+}
+
+.fr-skeleton-lines {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.fr-skeleton-line {
+  border-radius: 6px;
+  height: 0.85rem;
+  background: linear-gradient(90deg, hsl(0, 0%, 14%) 25%, hsl(0, 0%, 20%) 50%, hsl(0, 0%, 14%) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+
+.fr-skeleton-line.wide {
+  width: 55%;
+}
+
+.fr-skeleton-line.narrow {
+  width: 35%;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* ── Responsive ─────────────────────────────────────────── */
+@media (max-width: 1023px) {
+  .fr-main {
+    gap: 1rem;
+    padding: 1.5rem 1rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .fr-main {
+    flex-direction: column;
+    padding: 1rem 0.75rem;
+  }
+
+  .fr-card {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .fr-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 639px) {
+  .fr-main {
+    padding: 1rem 0.5rem 5rem;
+  }
+
+  .fr-page-title {
+    font-size: 1.35rem;
+  }
+
+  .fr-card {
+    border-radius: 10px;
+    padding: 0.85rem 0.9rem;
+  }
+}

@@ -127,19 +127,22 @@
     box-shadow: 0 0 0.5rem #fff;
   }
 
-  /* ===== MESSAGES BUTTON ===== */
-  .msg-btn-anchor {
+  /* ===== MESSAGES & NOTIFICATIONS BUTTONS ===== */
+  .msg-btn-anchor,
+  .notif-btn-anchor {
     position: relative;
   }
 
-  .msg-icon-wrap {
+  .msg-icon-wrap,
+  .notif-icon-wrap {
     position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
   }
 
-  .msg-badge {
+  .msg-badge,
+  .notif-badge {
     position: absolute;
     top: -6px;
     right: -8px;
@@ -780,7 +783,7 @@
   /* MAIN */
   .main-container {
     display: flex;
-    padding: 2rem 1.5rem;
+    padding: 3rem 1.5rem;
     width: 100%;
     max-width: 100%;
   }
@@ -1869,5 +1872,332 @@
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+/* ============================================================
+   RESPONSIVE LAYOUT — TABLET & MOBILE
+   Breakpoints:
+     Tablet  : 640px – 1023px  → left sidebar icon-only, right sidebar hidden
+     Mobile  : < 640px         → both sidebars hidden, bottom nav bar shown
+   ============================================================ */
+
+/* ── Tablet: 640px – 1023px ──────────────────────────────── */
+@media (max-width: 1023px) and (min-width: 640px) {
+  .home-page-wrapper .main-container {
+    padding: 1rem 0.75rem;
+    gap: 0.75rem;
+  }
+
+  /* Right sidebar: completely hidden */
+  .home-page-wrapper .right-sidebar {
+    display: none !important;
+  }
+
+  /* Left sidebar: collapse to slim icon-only strip */
+  .home-page-wrapper .left-sidebar {
+    flex: 0 0 auto !important;
+    width: 3.5rem !important;
+    min-width: 3.5rem !important;
+    overflow: visible;
+    gap: 0.5rem;
+  }
+
+  /* Hide text labels inside the collapsed sidebar */
+  .home-page-wrapper .left-sidebar .sidebar-profile-card span,
+  .home-page-wrapper .left-sidebar .sidebar-profile-card .fa-chevron-right,
+  .home-page-wrapper .left-sidebar nav span,
+  .home-page-wrapper .left-sidebar>div>h5,
+  .home-page-wrapper .left-sidebar>div>a,
+  .home-page-wrapper .left-sidebar>div .grid button span {
+    display: none !important;
+  }
+
+  /* Profile card: circular icon only */
+  .home-page-wrapper .left-sidebar .sidebar-profile-card {
+    padding: 0.4rem;
+    justify-content: center;
+    border-radius: 50%;
+    gap: 0;
+    aspect-ratio: 1/1;
+  }
+
+  /* Nav links: centred icon circle */
+  .home-page-wrapper .left-sidebar nav a {
+    justify-content: center;
+    padding: 0.5rem;
+    border-radius: 50%;
+  }
+
+  /* Games grid: single column icon-only */
+  .home-page-wrapper .left-sidebar>div {
+    padding: 0.4rem 0;
+    gap: 0.25rem;
+  }
+
+  .home-page-wrapper .left-sidebar>div .grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .home-page-wrapper .left-sidebar>div .grid button {
+    padding: 0.4rem;
+    border-radius: 12px;
+  }
+
+  .home-page-wrapper .left-sidebar>div .grid button>div {
+    width: 2.4rem !important;
+    border-radius: 10px;
+  }
+
+  /* Middle column: fill remaining space */
+  .home-page-wrapper .middle {
+    flex: 1 1 0 !important;
+    min-width: 0;
+    padding: 8px 10px;
+  }
+
+  /* Header search bar: use all available width */
+  .header .left-section .search-bar {
+    max-width: 100%;
+    margin: 0 0.5rem;
+  }
+
+  /* Message list popup */
+  .msg-list-popup {
+    right: 1rem !important;
+    width: 20rem;
+  }
+}
+
+
+/* ── Mobile: < 640px ─────────────────────────────────────── */
+@media (max-width: 639px) {
+
+  /* Extra bottom padding so content is not hidden by the nav bar */
+  .home-page-wrapper {
+    padding-bottom: 4.5rem;
+  }
+
+  .home-page-wrapper .main-container {
+    flex-direction: column;
+    padding: 0;
+    gap: 0;
+  }
+
+  /* Both sidebars: completely hidden */
+  .home-page-wrapper .left-sidebar,
+  .home-page-wrapper .right-sidebar {
+    display: none !important;
+  }
+
+  /* Middle feed: full width, flush edges */
+  .home-page-wrapper .middle {
+    flex: none !important;
+    width: 100% !important;
+    padding: 0 !important;
+  }
+
+  /* Stories wrapper: horizontal scroll */
+  .home-page-wrapper .middle>div:first-child {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .home-page-wrapper .middle>div:first-child::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Story inner strip padding */
+  .home-page-wrapper .middle .flex.gap-3 {
+    flex-wrap: nowrap;
+    padding: 0 0.75rem 0.5rem;
+    gap: 0.5rem;
+  }
+
+  /* Story card tiles: smaller on mobile */
+  .home-page-wrapper .middle .flex.gap-3>button>div,
+  .home-page-wrapper .middle .flex.gap-3>div>button>div {
+    width: 5.5rem !important;
+    height: 8.25rem !important;
+  }
+
+  /* Create post form: flush left/right, no rounded corners */
+  .home-page-wrapper .middle .create-post {
+    border-left: none !important;
+    border-right: none !important;
+    border-radius: 0 !important;
+    padding: 0.75rem !important;
+  }
+
+  /* Feed cards: full bleed */
+  .home-page-wrapper .feeds .feed {
+    border-left: none !important;
+    border-right: none !important;
+    border-radius: 0 !important;
+    padding: 0.85rem 0.75rem !important;
+  }
+
+  /* Post image grids: shorten for small screens */
+  .home-page-wrapper .image-grid.single-image {
+    max-height: 15rem;
+  }
+
+  .home-page-wrapper .image-grid.single-image img {
+    max-height: 15rem;
+  }
+
+  .home-page-wrapper .image-grid.two-images,
+  .home-page-wrapper .image-grid.three-images {
+    max-height: 11rem;
+  }
+
+  /* ── Header: mobile compact ── */
+  .header {
+    padding: 0.6rem 0.85rem !important;
+  }
+
+  /* Brand title: clamp size */
+  .header .left-section #logo h1 {
+    font-size: clamp(0.95rem, 5vw, 1.3rem);
+    white-space: nowrap;
+  }
+
+  /* Search bar: tighter on mobile */
+  .header .left-section .search-bar {
+    margin: 0 0.3rem;
+    padding: 0.3rem 0.6rem;
+  }
+
+  .header .left-section .search-bar input[type="search"] {
+    font-size: 0.78rem;
+  }
+
+  /* Hide "Home" link and "Bookmark" icon — these live in the bottom nav */
+  .header .right-section .menu-items a:first-child,
+  .header .right-section .menu-items a:nth-child(3) {
+    display: none !important;
+  }
+
+  /* Profile dropdown: avatar only, no name / caret */
+  .header .right-section .profile-dropdown p,
+  .header .right-section .profile-dropdown i.fa-sort-down {
+    display: none !important;
+  }
+
+  .header .right-section .profile-dropdown {
+    padding: 0.2rem;
+    border-radius: 50%;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  /* Message popup: full-width panel on mobile */
+  .msg-list-popup {
+    right: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    border-radius: 0 0 16px 16px !important;
+    top: 3.2rem;
+  }
+
+  /* Chat windows: full-width on mobile */
+  .chat-window {
+    width: 100vw !important;
+    right: 0 !important;
+    left: 0 !important;
+  }
+}
+
+
+/* ── Mobile Bottom Navigation Bar ────────────────────────── */
+.mobile-bottom-nav {
+  display: none;
+  /* hidden on desktop & tablet */
+}
+
+@media (max-width: 639px) {
+  .mobile-bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3.6rem;
+    background: rgba(0, 0, 0, 0.95);
+    border-top: 1px solid #1c1c1e;
+    z-index: 300;
+    align-items: stretch;
+    justify-content: space-around;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    /* iPhone safe-area (notch / home indicator) */
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .mobile-bottom-nav .mob-nav-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    gap: 3px;
+    color: hsl(0, 0%, 50%);
+    font-size: 1.05rem;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    transition: color 120ms ease, transform 120ms ease;
+    position: relative;
+    -webkit-tap-highlight-color: transparent;
+    padding: 0;
+  }
+
+  .mobile-bottom-nav .mob-nav-btn:active {
+    transform: scale(0.85);
+  }
+
+  .mobile-bottom-nav .mob-nav-btn.active {
+    color: #e89b15;
+  }
+
+  .mobile-bottom-nav .mob-nav-btn .mob-nav-label {
+    font-size: 0.58rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    font-family: 'Poppins', sans-serif;
+    line-height: 1;
+  }
+
+  .mobile-bottom-nav .mob-nav-badge {
+    position: absolute;
+    top: 4px;
+    right: calc(50% - 1.05rem);
+    background: #e54cff;
+    color: #fff;
+    font-size: 0.52rem;
+    font-weight: 700;
+    min-width: 14px;
+    height: 14px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 2px;
+    border: 2px solid #000;
+  }
+
+  /* Active indicator dot under icon */
+  .mobile-bottom-nav .mob-nav-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #e89b15;
   }
 }

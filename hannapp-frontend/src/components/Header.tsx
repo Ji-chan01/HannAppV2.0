@@ -81,12 +81,64 @@ export function formatDpUrl(url?: string): string {
   return `http://127.0.0.1:8000/media/${url}`;
 }
 
+interface Notification {
+  id: number;
+  type: 'like' | 'comment' | 'friend_request' | 'system';
+  senderName?: string;
+  senderDp?: string;
+  message: string;
+  time: string;
+  unread: boolean;
+}
+
+const MOCK_NOTIFICATIONS: Notification[] = [
+  {
+    id: 1,
+    type: 'friend_request',
+    senderName: 'Marcus Aurelius',
+    senderDp: '/assets/images/dp/avatar-men.png',
+    message: 'sent you a friend request.',
+    time: '5m ago',
+    unread: true,
+  },
+  {
+    id: 2,
+    type: 'like',
+    senderName: 'Hannah Abbott',
+    senderDp: '',
+    message: 'liked your post "Working on my new project!".',
+    time: '2h ago',
+    unread: true,
+  },
+  {
+    id: 3,
+    type: 'comment',
+    senderName: 'Sarah Jenkins',
+    senderDp: '/assets/images/dp/avatar-women.png',
+    message: 'commented on your story: "This is absolutely stunning! ✨"',
+    time: '1d ago',
+    unread: false,
+  },
+  {
+    id: 4,
+    type: 'system',
+    senderName: 'HannApp Team',
+    message: 'Welcome to HannApp! Explore the new responsive layout features.',
+    time: '2d ago',
+    unread: false,
+  },
+];
+
 const Header: React.FC<HeaderProps> = ({ isDayMode, setIsDayMode, currentUser }) => {
   const navigate = useNavigate();
   const [showMsgList, setShowMsgList] = useState(false);
+  const [showNotifList, setShowNotifList] = useState(false);
+  const [notifications, setNotifications] = useState<Notification[]>(MOCK_NOTIFICATIONS);
   const [openChats, setOpenChats] = useState<OpenChat[]>([]);
   const msgBtnRef = useRef<HTMLAnchorElement>(null);
   const msgListRef = useRef<HTMLDivElement>(null);
+  const notifBtnRef = useRef<HTMLAnchorElement>(null);
+  const notifListRef = useRef<HTMLDivElement>(null);
 
   // Profile and Search states
   const [user, setUser] = useState<any>(currentUser || null);
@@ -128,6 +180,16 @@ const Header: React.FC<HeaderProps> = ({ isDayMode, setIsDayMode, currentUser })
         !msgBtnRef.current.contains(e.target as Node)
       ) {
         setShowMsgList(false);
+      }
+
+      // Notifications list popup outside click
+      if (
+        notifListRef.current &&
+        !notifListRef.current.contains(e.target as Node) &&
+        notifBtnRef.current &&
+        !notifBtnRef.current.contains(e.target as Node)
+      ) {
+        setShowNotifList(false);
       }
 
       // Profile modal dropdown outside click
@@ -231,6 +293,53 @@ const Header: React.FC<HeaderProps> = ({ isDayMode, setIsDayMode, currentUser })
     );
   }
 
+  const unreadNotificationsCount = notifications.filter((n) => n.unread).length;
+
+  const markAllNotificationsAsRead = () => {
+    setNotifications((prev) => prev.map((n) => ({ ...n, unread: false })));
+  };
+
+  const handleNotificationClick = (notif: Notification) => {
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === notif.id ? { ...n, unread: false } : n))
+    );
+  };
+
+  const handleAcceptFriendRequest = (id: number) => {
+    setNotifications((prev) =>
+      prev.map((n) =>
+        n.id === id
+          ? { ...n, message: 'accepted your friend request.', unread: false }
+          : n
+      )
+    );
+  };
+
+  const handleDeclineFriendRequest = (id: number) => {
+    setNotifications((prev) =>
+      prev.map((n) =>
+        n.id === id
+          ? { ...n, message: 'declined the friend request.', unread: false }
+          : n
+      )
+    );
+  };
+
+  function getNotifIcon(type: 'like' | 'comment' | 'friend_request' | 'system') {
+    switch (type) {
+      case 'like':
+        return <i className="fa-solid fa-heart"></i>;
+      case 'comment':
+        return <i className="fa-solid fa-comment"></i>;
+      case 'friend_request':
+        return <i className="fa-solid fa-user-plus"></i>;
+      case 'system':
+        return <i className="fa-solid fa-circle-info"></i>;
+      default:
+        return <i className="fa-solid fa-bell"></i>;
+    }
+  }
+
   const userDisplayName = user ? `${user.first_name} ${user.last_name}` : 'Loading...';
   const userHandle = user ? user.username : '@loading';
   const userDp = user ? formatDpUrl(user.dp) : '/assets/gifs/loading.gif';
@@ -326,6 +435,8 @@ const Header: React.FC<HeaderProps> = ({ isDayMode, setIsDayMode, currentUser })
               onClick={(e) => {
                 e.preventDefault();
                 setShowMsgList((v) => !v);
+                setShowNotifList(false);
+                setIsProfileOpen(false);
               }}
               title="Messages"
             >
@@ -346,21 +457,114 @@ const Header: React.FC<HeaderProps> = ({ isDayMode, setIsDayMode, currentUser })
                 <i className="fa-regular fa-bookmark"></i>
               </span>
             </a>
-            <a
-              href="#"
-              className="menu-item"
-              onClick={(e) => e.preventDefault()}
-            >
-              <span>
-                <i className="fa-solid fa-bell"></i>
-              </span>
-            </a>
+
+            {/* Notifications Button */}
+            <div className="notif-container">
+              <a
+                href="#"
+                className="menu-item notif-btn-anchor"
+                ref={notifBtnRef}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setShowNotifList((v) => !v);
+                  setShowMsgList(false);
+                  setIsProfileOpen(false);
+                }}
+                title="Notifications"
+              >
+                <span className="notif-icon-wrap">
+                  <i className="fa-solid fa-bell"></i>
+                  {unreadNotificationsCount > 0 && (
+                    <span className="notif-badge">{unreadNotificationsCount}</span>
+                  )}
+                </span>
+              </a>
+
+              {/* Notifications List Popup */}
+              {showNotifList && (
+                <div className="notif-list-popup" ref={notifListRef}>
+                  <div className="notif-list-header">
+                    <h4>Notifications</h4>
+                    <button
+                      className="notif-list-mark-read-btn"
+                      title="Mark all as read"
+                      onClick={markAllNotificationsAsRead}
+                    >
+                      <i className="fa-solid fa-circle-check"></i>
+                    </button>
+                  </div>
+                  <div className="notif-list-body">
+                    {notifications.length > 0 ? (
+                      notifications.map((notif) => (
+                        <div
+                          key={notif.id}
+                          className={`notif-list-item${notif.unread ? ' unread' : ''}`}
+                          onClick={() => handleNotificationClick(notif)}
+                        >
+                          <div className="notif-list-avatar">
+                            {notif.senderDp ? (
+                              <img
+                                className="notif-avatar-img"
+                                src={formatDpUrl(notif.senderDp)}
+                                alt={notif.senderName}
+                              />
+                            ) : (
+                              <div className="notif-avatar-initials">
+                                {getInitials(notif.senderName || 'System')}
+                              </div>
+                            )}
+                            <div className={`notif-type-icon ${notif.type}`}>
+                              {getNotifIcon(notif.type)}
+                            </div>
+                          </div>
+                          <div className="notif-list-info">
+                            <div className="notif-list-text">
+                              <span className="notif-sender-name">{notif.senderName}</span>{' '}
+                              {notif.message}
+                            </div>
+                            <span className="notif-list-time">{notif.time}</span>
+
+                            {/* Interactive Accept/Decline for Friend Requests */}
+                            {notif.type === 'friend_request' && notif.unread && (
+                              <div className="notif-action-buttons" onClick={(e) => e.stopPropagation()}>
+                                <button
+                                  className="notif-btn-accept"
+                                  onClick={() => handleAcceptFriendRequest(notif.id)}
+                                >
+                                  Accept
+                                </button>
+                                <button
+                                  className="notif-btn-decline"
+                                  onClick={() => handleDeclineFriendRequest(notif.id)}
+                                >
+                                  Decline
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                          {notif.unread && <span className="notif-unread-dot"></span>}
+                        </div>
+                      ))
+                    ) : (
+                      <div className="notif-empty-state">
+                        <i className="fa-regular fa-bell-slash"></i>
+                        <p>No notifications yet</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
           <div
             className="profile-dropdown"
             ref={profileRef}
-            onClick={() => setIsProfileOpen((v) => !v)}
+            onClick={() => {
+              setIsProfileOpen((v) => !v);
+              setShowMsgList(false);
+              setShowNotifList(false);
+            }}
           >
             <div className="profile-picture">
               <img
@@ -455,6 +659,7 @@ const Header: React.FC<HeaderProps> = ({ isDayMode, setIsDayMode, currentUser })
             </div>
           </div>
         )}
+
       </header>
 
       {/* Chat windows rendered via portal — escapes header's stacking context */}

@@ -55,6 +55,9 @@ const HomePage: React.FC = () => {
   const [errorMsg, setErrorMsg] = useState('');
   const [warningMsg, setWarningMsg] = useState('');
 
+  // Mobile bottom nav active tab
+  const [mobileTab, setMobileTab] = useState<'home' | 'search' | 'friends' | 'messages' | 'profile'>('home');
+
   /* ─── Story state ─────────────────────────────── */
   const [storyOpen, setStoryOpen] = useState(false);
   const [storyIndex, setStoryIndex] = useState(0);
@@ -412,7 +415,7 @@ const HomePage: React.FC = () => {
     <div className={`home-page-wrapper bg-[var(--smoky-black)] pt-12 min-h-screen w-full text-[var(--light-gray)] font-[var(--ff-poppins)] relative transition-colors duration-200 ${isDayMode ? 'day bg-white text-black' : ''}`}>
       <Header isDayMode={isDayMode} setIsDayMode={setIsDayMode} currentUser={currentUser} />
 
-      <main className="main-container flex p-8 px-6 w-full max-w-full gap-6">
+      <main className="main-container flex w-full max-w-full gap-6">
         <HomeLeftSidebar currentUser={currentUser} />
 
         <section className="middle w-full h-full p-[15px_20px] flex flex-col flex-[3] gap-0 min-w-0">
@@ -740,6 +743,79 @@ const HomePage: React.FC = () => {
           </div>
         )}
       </main>
+
+      {/* ── Mobile Bottom Navigation Bar (visible only on < 640px via CSS) ── */}
+      <nav className="mobile-bottom-nav" aria-label="Mobile navigation">
+
+        {/* Home */}
+        <button
+          className={`mob-nav-btn${mobileTab === 'home' ? ' active' : ''}`}
+          onClick={() => { setMobileTab('home'); navigate('/home'); }}
+          aria-label="Home"
+        >
+          <i className="fa-solid fa-house" />
+          <span className="mob-nav-label">Home</span>
+        </button>
+
+        {/* Search */}
+        <button
+          className={`mob-nav-btn${mobileTab === 'search' ? ' active' : ''}`}
+          onClick={() => setMobileTab('search')}
+          aria-label="Search"
+        >
+          <i className="fa-solid fa-magnifying-glass" />
+          <span className="mob-nav-label">Search</span>
+        </button>
+
+        {/* Friends */}
+        <button
+          className={`mob-nav-btn${mobileTab === 'friends' ? ' active' : ''}`}
+          onClick={() => setMobileTab('friends')}
+          aria-label="Friends"
+        >
+          <i className="fa-solid fa-user-plus" />
+          <span className="mob-nav-label">Friends</span>
+        </button>
+
+        {/* Messages — reuses the header's message list toggle */}
+        <button
+          className={`mob-nav-btn${mobileTab === 'messages' ? ' active' : ''}`}
+          onClick={() => setMobileTab('messages')}
+          aria-label="Messages"
+        >
+          <span className="mob-nav-badge">4</span>
+          <i className="fa-solid fa-message" />
+          <span className="mob-nav-label">Messages</span>
+        </button>
+
+        {/* Profile */}
+        <button
+          className={`mob-nav-btn${mobileTab === 'profile' ? ' active' : ''}`}
+          onClick={() => {
+            setMobileTab('profile');
+            navigate(`/profile?p=${currentUser?.userId || 1}`);
+          }}
+          aria-label="Profile"
+        >
+          {currentUser?.dp ? (
+            <img
+              src={formatDpUrl(currentUser.dp)}
+              alt="Me"
+              style={{
+                width: '1.6rem',
+                height: '1.6rem',
+                borderRadius: '50%',
+                objectFit: 'cover',
+                border: mobileTab === 'profile' ? '2px solid #e89b15' : '2px solid #555',
+              }}
+            />
+          ) : (
+            <i className="fa-solid fa-circle-user" />
+          )}
+          <span className="mob-nav-label">Profile</span>
+        </button>
+
+      </nav>
     </div>
   );
 };
